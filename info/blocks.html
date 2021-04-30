@@ -1,0 +1,181 @@
+<html>
+<title>Hammer of the Scots - Blocks</title>
+<link rel="stylesheet" href="../blocks.css">
+<style>
+body {
+	margin: 40px;
+	background-color: slategray;
+	color: white;
+	text-align: center;
+}
+div.list {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+}
+div.block {
+	width: 60px;
+	height: 60px;
+	margin: 5px;
+	background-size: 700% 400%;
+	box-shadow: 1px 1px 4px rgba(0,0,0,0.5);
+}
+div.block:hover {
+	transform: scale(2);
+}
+.oldblocks div.block {
+	border-radius: 6px;
+}
+.oldblocks div.block.england { border: 3px solid brown; background-color: brown; }
+.oldblocks div.block.scotland { border: 3px solid #06a; background-color: #06a; }
+.newblocks div.block.england { border: 3px solid #a12; background-color: #a12; }
+.newblocks div.block.scotland { border: 3px solid #059; background-color: #059; }
+
+.oldblocks .known.scotland{background-image:url(../old_blocks_scotland.png)}
+.oldblocks .known.england{background-image:url(../old_blocks_england.png)}
+.newblocks .known.scotland{background-image:url(../new_blocks_scotland.png)}
+.newblocks .known.england{background-image:url(../new_blocks_england.png)}
+
+.known.block_11{background-position:0px 0px}
+.known.block_12{background-position:-60px 0px}
+.known.block_13{background-position:-120px 0px}
+.known.block_14{background-position:-180px 0px}
+.known.block_15{background-position:-240px 0px}
+.known.block_16{background-position:-300px 0px}
+.known.block_17{background-position:-360px 0px}
+.known.block_21{background-position:0px -60px}
+.known.block_22{background-position:-60px -60px}
+.known.block_23{background-position:-120px -60px}
+.known.block_24{background-position:-180px -60px}
+.known.block_25{background-position:-240px -60px}
+.known.block_26{background-position:-300px -60px}
+.known.block_27{background-position:-360px -60px}
+.known.block_31{background-position:0px -120px}
+.known.block_32{background-position:-60px -120px}
+.known.block_33{background-position:-120px -120px}
+.known.block_34{background-position:-180px -120px}
+.known.block_35{background-position:-240px -120px}
+.known.block_36{background-position:-300px -120px}
+.known.block_37{background-position:-360px -120px}
+.known.block_41{background-position:0px -180px}
+.known.block_42{background-position:-60px -180px}
+.known.block_43{background-position:-120px -180px}
+.known.block_44{background-position:-180px -180px}
+.known.block_45{background-position:-240px -180px}
+.known.block_46{background-position:-300px -180px}
+.known.block_47{background-position:-360px -180px}
+.known.block_61{background-position:0px 0px}
+.known.block_62{background-position:-60px 0px}
+.known.block_63{background-position:-120px 0px}
+.known.block_64{background-position:-180px 0px}
+.known.block_65{background-position:-240px 0px}
+.known.block_66{background-position:-300px 0px}
+.known.block_67{background-position:-360px 0px}
+.known.block_71{background-position:0px -60px}
+.known.block_72{background-position:-60px -60px}
+.known.block_73{background-position:-120px -60px}
+.known.block_74{background-position:-180px -60px}
+.known.block_75{background-position:-240px -60px}
+.known.block_76{background-position:-300px -60px}
+.known.block_77{background-position:-360px -60px}
+.known.block_81{background-position:0px -120px}
+.known.block_82{background-position:-60px -120px}
+.known.block_83{background-position:-120px -120px}
+.known.block_84{background-position:-180px -120px}
+.known.block_85{background-position:-240px -120px}
+.known.block_86{background-position:-300px -120px}
+.known.block_87{background-position:-360px -120px}
+.known.block_91{background-position:0px -180px}
+.known.block_92{background-position:-60px -180px}
+.known.block_93{background-position:-120px -180px}
+.known.block_94{background-position:-180px -180px}
+.known.block_95{background-position:-240px -180px}
+.known.block_96{background-position:-300px -180px}
+.known.block_97{background-position:-360px -180px}
+
+
+</style>
+<body id="body" class="oldblocks">
+<h1>
+Hammer of the Scots - Blocks
+</h1>
+
+<button onclick="window.body.className='oldblocks'">1st edition</button>
+<button onclick="window.body.className='newblocks'">3rd edition</button>
+
+<h2>Scottish</h2>
+<div class="list">
+<div class="scotland known block block_11"></div>
+<div class="scotland known block block_12"></div>
+<div class="scotland known block block_13"></div>
+<div class="scotland known block block_14"></div>
+<div class="scotland known block block_15"></div>
+<div class="scotland known block block_16"></div>
+<div class="scotland known block block_17"></div>
+</div>
+<div class="list">
+<div class="scotland known block block_21"></div>
+<div class="scotland known block block_22"></div>
+<div class="scotland known block block_23"></div>
+<div class="scotland known block block_24"></div>
+<div class="scotland known block block_25"></div>
+<div class="scotland known block block_26"></div>
+<div class="scotland known block block_27"></div>
+</div>
+<div class="list">
+<div class="scotland known block block_31"></div>
+<div class="scotland known block block_32"></div>
+<div class="scotland known block block_33"></div>
+<div class="scotland known block block_34"></div>
+<div class="scotland known block block_35"></div>
+<div class="scotland known block block_36"></div>
+<div class="scotland known block block_37"></div>
+</div>
+<div class="list">
+<div class="scotland known block block_41"></div>
+<div class="scotland known block block_42"></div>
+<div class="scotland known block block_43"></div>
+<div class="scotland known block block_44"></div>
+<div class="scotland known block block_45"></div>
+<div class="scotland known block block_46"></div>
+<div class="scotland known block block_47"></div>
+</div>
+
+<h2>English</h2>
+<div class="list">
+<div class="england known block block_61"></div>
+<div class="england known block block_62"></div>
+<div class="england known block block_63"></div>
+<div class="england known block block_64"></div>
+<div class="england known block block_65"></div>
+<div class="england known block block_66"></div>
+<div class="england known block block_67"></div>
+</div>
+<div class="list">
+<div class="england known block block_71"></div>
+<div class="england known block block_72"></div>
+<div class="england known block block_73"></div>
+<div class="england known block block_74"></div>
+<div class="england known block block_75"></div>
+<div class="england known block block_76"></div>
+<div class="england known block block_77"></div>
+</div>
+<div class="list">
+<div class="england known block block_81"></div>
+<div class="england known block block_82"></div>
+<div class="england known block block_83"></div>
+<div class="england known block block_84"></div>
+<div class="england known block block_85"></div>
+<div class="england known block block_86"></div>
+<div class="england known block block_87"></div>
+</div>
+<div class="list">
+<div class="england known block block_91"></div>
+<div class="england known block block_92"></div>
+<div class="england known block block_93"></div>
+<div class="england known block block_94"></div>
+<div class="england known block block_95"></div>
+<div class="england known block block_96"></div>
+<div class="england known block block_97"></div>
+</div>
+
