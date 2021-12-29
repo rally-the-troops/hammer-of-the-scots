@@ -206,66 +206,6 @@ function on_herald(noble) {
 	send_action('noble', noble);
 }
 
-function on_button_undo(evt) {
-	send_action('undo');
-}
-
-function on_button_play_event(evt) {
-	send_action('play_event');
-}
-
-function on_button_end_move_phase(evt) {
-	send_action('end_move_phase');
-}
-
-function on_button_end_regroup(evt) {
-	send_action('end_regroup');
-}
-
-function on_button_end_retreat(evt) {
-	send_action('end_retreat');
-}
-
-function on_button_eliminate(evt) {
-	send_action('eliminate');
-}
-
-function on_button_disband(evt) {
-	send_action('disband');
-}
-
-function on_button_winter(evt) {
-	send_action('winter');
-}
-
-function on_button_end_disbanding(evt) {
-	send_action('end_disbanding');
-}
-
-function on_button_end_builds(evt) {
-	send_action('end_builds');
-}
-
-function on_button_end_pillage(evt) {
-	send_action('end_pillage');
-}
-
-function on_button_pass(evt) {
-	send_action('pass');
-}
-
-function on_crown_bruce(evt) {
-	send_action('crown_bruce');
-}
-
-function on_crown_comyn(evt) {
-	send_action('crown_comyn');
-}
-
-function on_return_of_the_king(evt) {
-	send_action('return_of_the_king');
-}
-
 function build_battle_button(menu, b, c, click, enter, img_src) {
 	let img = new Image();
 	img.draggable = false;
@@ -748,21 +688,21 @@ function update_battle() {
 }
 
 function on_update() {
-	show_action_button("#undo_button", "undo");
-	show_action_button("#pass_button", "pass");
-	show_action_button("#play_event_button", "play_event");
-	show_action_button("#end_move_phase_button", "end_move_phase");
-	show_action_button("#end_regroup_button", "end_regroup");
-	show_action_button("#end_retreat_button", "end_retreat");
-	show_action_button("#winter_button", "winter");
-	show_action_button("#eliminate_button", "eliminate");
-	show_action_button("#disband_button", "disband");
-	show_action_button("#end_disbanding_button", "end_disbanding");
-	show_action_button("#end_builds_button", "end_builds");
-	show_action_button("#end_pillage_button", "end_pillage");
-	show_action_button("#crown_bruce_button", "crown_bruce");
-	show_action_button("#crown_comyn_button", "crown_comyn");
-	show_action_button("#return_of_the_king_button", "return_of_the_king");
+	action_button("crown_bruce", "Crown Bruce");
+	action_button("crown_comyn", "Crown Comyn");
+	action_button("return_of_the_king", "Return of the King");
+	action_button("play_event", "Play event");
+	action_button("winter", "Winter");
+	action_button("eliminate", "Eliminate");
+	action_button("disband", "Disband");
+	action_button("end_move_phase", "End move phase");
+	action_button("end_regroup", "End regroup");
+	action_button("end_retreat", "End retreat");
+	action_button("end_disbanding", "End disbanding");
+	action_button("end_builds", "End builds");
+	action_button("end_pillage", "End pillage");
+	action_button("pass", "Pass");
+	action_button("undo", "Undo");
 
 	document.getElementById("england_vp").textContent = game.e_vp;
 	document.getElementById("scotland_vp").textContent = game.s_vp;
@@ -772,7 +712,7 @@ function on_update() {
 	update_map();
 
 	if (game.actions && game.actions.noble) {
-		document.querySelector(".herald").classList.add("show");
+		document.getElementById("herald").classList.add("show");
 		for (let noble of NOBLES) {
 			let element = document.getElementById("herald+" + noble);
 			if (game.actions.noble.includes(noble))
@@ -781,7 +721,7 @@ function on_update() {
 				element.classList.remove("show");
 		}
 	} else {
-		document.querySelector(".herald").classList.remove("show");
+		document.getElementById("herald").classList.remove("show");
 	}
 
 	if (game.battle) {
@@ -795,8 +735,8 @@ function on_update() {
 }
 
 drag_element_with_mouse("#battle", "#battle_header");
-drag_element_with_mouse(".herald", ".herald_header");
-scroll_with_middle_mouse("#grid_center", 2);
+drag_element_with_mouse("#herald", "#herald_header");
+scroll_with_middle_mouse("main", 2);
 init_map_zoom();
 init_shift_zoom();
 init_client([ "England", "Scotland" ]);
