@@ -600,13 +600,13 @@ function update_cards() {
 	}
 
 	if (!game.e_card)
-		document.getElementById("england_card").className = "small_card card_back";
+		document.getElementById("england_card").className = "show card card_back";
 	else
-		document.getElementById("england_card").className = "small_card " + CARDS[game.e_card].image;
+		document.getElementById("england_card").className = "show card " + CARDS[game.e_card].image;
 	if (!game.s_card)
-		document.getElementById("scotland_card").className = "small_card card_back";
+		document.getElementById("scotland_card").className = "show card card_back";
 	else
-		document.getElementById("scotland_card").className = "small_card " + CARDS[game.s_card].image;
+		document.getElementById("scotland_card").className = "show card " + CARDS[game.s_card].image;
 }
 
 function update_battle() {
