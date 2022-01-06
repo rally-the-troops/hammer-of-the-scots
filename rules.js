@@ -110,7 +110,7 @@ function clear_undo() {
 
 function push_undo() {
 	game.undo.push(JSON.stringify(game, (k,v) => {
-		if (k === 'undo') return undefined;
+		if (k === 'undo') return 0;
 		if (k === 'log') return v.length;
 		return v;
 	}));
@@ -119,7 +119,7 @@ function push_undo() {
 function pop_undo() {
 	let undo = game.undo;
 	let save_log = game.log;
-	Object.assign(game, JSON.parse(undo.pop()));
+	game = JSON.parse(undo.pop());
 	game.undo = undo;
 	save_log.length = game.log;
 	game.log = save_log;
@@ -756,9 +756,10 @@ function start_year() {
 }
 
 function start_game_turn() {
-	let turn = 6 - game.e_hand.length;
+	game.turn = 6 - game.e_hand.length;
+
 	log("");
-	log("Start Turn " + turn + " of Year " + game.year + ".");
+	log("Start Turn " + game.turn + " of Year " + game.year + ".");
 
 	// Reset movement and attack tracking state
 	game.truce = false;
@@ -2814,7 +2815,7 @@ function make_battle_view() {
 	function fill_cell(cell, owner, fn) {
 		for (let b in BLOCKS)
 			if (game.location[b] === game.where & block_owner(b) === owner && fn(b))
-				cell.push([b, game.steps[b], game.moved[b]?1:0])
+				cell.push(b);
 	}
 
 	fill_cell(battle.ER, ENGLAND, b => is_battle_reserve(b));
@@ -2871,7 +2872,7 @@ exports.action = function (state, current, action, arg) {
 		S[action](arg, current);
 	else
 		throw new Error("Invalid action: " + action);
-	return state;
+	return game;
 }
 
 exports.resign = function (state, current) {
@@ -2884,7 +2885,7 @@ exports.resign = function (state, current) {
 		game.victory = current + " resigned.";
 		game.result = ENEMY[current];
 	}
-	return state;
+	return game;
 }
 
 function observer_hand() {
@@ -2893,6 +2894,8 @@ function observer_hand() {
 	hand.fill(0);
 	return hand;
 }
+
+exports.is_checkpoint = (a, b) => a.turn !== b.turn;
 
 exports.view = function(state, current) {
 	game = state;
@@ -2909,8 +2912,9 @@ exports.view = function(state, current) {
 		hand: (current === ENGLAND) ? game.e_hand : (current === SCOTLAND) ? game.s_hand : observer_hand(),
 		who: (game.active === current) ? game.who : null,
 		where: game.where,
-		known: {},
-		secret: { Scotland: {}, England: {} },
+		location: game.location,
+		steps: game.steps,
+		moved: game.moved,
 		battle: null,
 		active: game.active,
 		prompt: null,
@@ -2921,23 +2925,6 @@ exports.view = function(state, current) {
 
 	if (states[game.state].show_battle)
 		view.battle = make_battle_view();
-
-	for (let b in BLOCKS) {
-		let a = game.location[b];
-		if (current === block_owner(b) || game.state === 'game_over') {
-			if (a)
-				view.known[b] = [a, game.steps[b], game.moved[b] ? 1 : 0];
-		} else {
-			if (a) {
-				let list = view.secret[block_owner(b)];
-				if (!(a in list))
-					list[a] = [0, 0];
-				list[a][0]++;
-				if (game.moved[b])
-					list[a][1]++;
-			}
-		}
-	}
 
 	return view;
 }

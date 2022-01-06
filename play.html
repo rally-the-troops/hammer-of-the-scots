@@ -6,11 +6,10 @@
 <title>HAMMER OF THE SCOTS</title>
 <link rel="icon" href="Scottish_Thistle_(Heraldry).svg">
 <link rel="stylesheet" href="/fonts/fonts.css">
-<link rel="stylesheet" href="/common/grid.css">
-<link rel="stylesheet" href="/common/battle_abc.css">
+<link rel="stylesheet" href="/common/play.css">
+<link rel="stylesheet" href="/common/columbia.css">
 <link rel="stylesheet" href="play.css">
-<script defer src="/socket.io/socket.io.min.js"></script>
-<script defer src="/common/client.js"></script>
+<script defer src="/common/play.js"></script>
 <script defer src="data.js"></script>
 <script defer src="play.js"></script>
 </head>
@@ -80,7 +79,7 @@
 
 <aside>
 	<div id="roles">
-		<div class="role one">
+		<div class="role" id="role_England">
 			<div class="role_name">
 				England
 				<div class="role_vp" id="england_vp"></div>
@@ -90,7 +89,7 @@
 				<div class="show card card_back" id="england_card"></div>
 			</div>
 		</div>
-		<div class="role two">
+		<div class="role" id="role_Scotland">
 			<div class="role_name">
 				Scotland
 				<div class="role_vp" id="scotland_vp"></div>

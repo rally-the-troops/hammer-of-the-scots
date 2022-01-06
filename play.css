@@ -2,8 +2,8 @@ main { background-color: slategray; }
 aside { background-color: silver; }
 header { background-color: silver; }
 header.your_turn { background-color: orange; }
-.one .role_name { background-color: salmon; }
-.two .role_name { background-color: skyblue; }
+#role_England .role_name { background-color: salmon; }
+#role_Scotland .role_name { background-color: skyblue; }
 #turn_info { background-color: gainsboro; }
 
 #log { background-color: whitesmoke; }
@@ -233,7 +233,7 @@ div.block {
 #battle_header { background-color: steelblue; color: white; }
 .battle_separator { background-color: steelblue; }
 
-.battle_line.enemy .battle_menu_list { min-height: 0; }
+body:not(.replay) .battle_line.enemy .battle_menu_list { min-height: 0; }
 .battle_reserves > td > div { height: 66px; }
 .battle_a_cell > div { min-width: 240px; }
 .battle_b_cell > div { min-width: 240px; }
