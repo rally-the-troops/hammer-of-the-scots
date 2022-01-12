@@ -101,7 +101,9 @@ function block_name(who) {
 }
 
 function is_known_block(b) {
-	return (view.game_over || BLOCKS[b].owner === player);
+	if (view.game_over && player === 'Observer')
+		return true;
+	return BLOCKS[b].owner === player;
 }
 
 function on_focus_map_block(evt) {
