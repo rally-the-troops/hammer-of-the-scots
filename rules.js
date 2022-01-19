@@ -1736,6 +1736,7 @@ function goto_battle_hits() {
 
 function apply_hit(who) {
 	game.flash = block_name(who) + " takes a hit.";
+	log_battle(block_name(who) + " takes a hit.");
 	reduce_block(who, 'combat');
 	game.hits--;
 	if (game.victory)
