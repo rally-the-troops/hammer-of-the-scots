@@ -250,6 +250,14 @@ function count_blocks_in_area(where) {
 	return count;
 }
 
+function count_blocks_in_area_excluding(where, exc) {
+	let count = 0;
+	for (let b in BLOCKS)
+		if (game.location[b] === where && !exc.includes(b))
+			++count;
+	return count;
+}
+
 function castle_limit(where) {
 	if (game.active === SCOTLAND && is_cathedral_area(where))
 		return AREAS[where].limit + 1;
@@ -2646,6 +2654,16 @@ function goto_scottish_builds() {
 	clear_undo();
 }
 
+function can_build_scottish_block_in(where) {
+	if (is_under_castle_limit(where)) {
+		if (where === "Lanark" || where === "Badenoch")
+			return count_blocks_in_area_excluding(S_BAG, [ NORSE, FRENCH_KNIGHTS ]) > 0;
+		else
+			return count_blocks_in_area(S_BAG) > 0;
+	}
+	return false;
+}
+
 states.scottish_builds = {
 	prompt: function (view, current) {
 		if (is_inactive_player(current))
@@ -2662,7 +2680,7 @@ states.scottish_builds = {
 						can_build = true;
 					}
 				}
-				if (is_under_castle_limit(where) && count_blocks_in_area(S_BAG) > 0) {
+				if (can_build_scottish_block_in(where)) {
 					gen_action(view, 'area', where);
 					can_build = true;
 				}
