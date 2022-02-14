@@ -6,6 +6,11 @@ exports.scenarios = [
 	"Campaign",
 ];
 
+exports.roles = [
+	"England",
+	"Scotland",
+];
+
 const { CARDS, BLOCKS, AREAS, BORDERS } = require('./data');
 
 const ENEMY = { Scotland: "England", England: "Scotland" }
