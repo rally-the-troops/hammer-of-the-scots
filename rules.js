@@ -2805,7 +2805,6 @@ function goto_game_over() {
 			game.victory = "Scotland wins by controlling the most nobles!";
 			game.result = SCOTLAND;
 		} else {
-			game.log("Tied for majority of nobles.");
 			if (is_on_map(WALLACE)) {
 				game.victory = "Tied for control of nobles. Scotland wins because Wallace is on the map!";
 				game.result = SCOTLAND;
