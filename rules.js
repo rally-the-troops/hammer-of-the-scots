@@ -1117,16 +1117,25 @@ states.victuals = {
 	prompt: function (view, current) {
 		if (is_inactive_player(current))
 			return view.prompt = "Waiting for " + game.active + " to build.";
-		view.prompt = "Victuals: Distribute three steps among friendly blocks in one group.";
 		gen_action_undo(view);
-		gen_action(view, 'end_builds');
+		let done = true;
 		if (game.victuals > 0) {
 			for (let b in BLOCKS) {
-				if (is_on_map(b) && block_owner(b) === game.active)
-					if (game.steps[b] < block_max_steps(b))
-						if (!game.where || game.location[b] === game.where)
+				if (is_on_map(b) && block_owner(b) === game.active) {
+					if (game.steps[b] < block_max_steps(b)) {
+						if (!game.where || game.location[b] === game.where) {
 							gen_action(view, 'block', b);
+							done = false;
+						}
+					}
+				}
 			}
+		}
+		if (done) {
+			view.prompt = "Victuals: Distribute three steps among friendly blocks in one group \u2014 done.";
+			gen_action(view, 'end_builds');
+		} else {
+			view.prompt = "Victuals: Distribute three steps among friendly blocks in one group.";
 		}
 	},
 	block: function (who) {
@@ -1216,22 +1225,36 @@ states.pillage_builds = {
 	prompt: function (view, current) {
 		if (is_inactive_player(current))
 			return view.prompt = "Waiting for " + game.active + " to apply pillage builds.";
-		view.prompt = "Pillage: Add pillaged steps to friendly blocks in the pillaging group.";
 		gen_action_undo(view);
-		gen_action(view, 'end_pillage');
+		let done = true;
 		if (game.pillage > 0) {
 			if (game.where) {
-				for (let b in BLOCKS)
-					if (block_owner(b) === game.active && game.location[b] === game.where)
-						if (game.steps[b] < block_max_steps(b))
+				for (let b in BLOCKS) {
+					if (block_owner(b) === game.active && game.location[b] === game.where) {
+						if (game.steps[b] < block_max_steps(b)) {
 							gen_action(view, 'block', b);
+							done = false;
+						}
+					}
+				}
 			} else {
-				for (let to of AREAS[game.from].exits)
-					for (let b in BLOCKS)
-						if (block_owner(b) === game.active && game.location[b] === to)
-							if (game.steps[b] < block_max_steps(b))
+				for (let to of AREAS[game.from].exits) {
+					for (let b in BLOCKS) {
+						if (block_owner(b) === game.active && game.location[b] === to) {
+							if (game.steps[b] < block_max_steps(b)) {
 								gen_action(view, 'block', b);
+								done = false;
+							}
+						}
+					}
+				}
 			}
+		}
+		if (done) {
+			view.prompt = "Pillage: Add pillaged steps to friendly blocks in the pillaging group \u2014 done";
+			gen_action(view, 'end_pillage');
+		} else {
+			view.prompt = "Pillage: Add pillaged steps to friendly blocks in the pillaging group.";
 		}
 	},
 	block: function (who) {
@@ -2674,27 +2697,28 @@ states.scottish_builds = {
 		if (is_inactive_player(current))
 			return view.prompt = "Waiting for Scotland to build.";
 		gen_action_undo(view);
-		gen_action(view, 'end_builds');
-		let can_build = false;
+		let done = true;
 		for (let where in game.rp) {
 			let rp = game.rp[where];
 			if (rp > 0) {
 				for (let b in BLOCKS) {
 					if (game.location[b] === where && game.steps[b] < block_max_steps(b)) {
 						gen_action(view, 'block', b);
-						can_build = true;
+						done = false;
 					}
 				}
 				if (can_build_scottish_block_in(where)) {
 					gen_action(view, 'area', where);
-					can_build = true;
+					done = false;
 				}
 			}
 		}
-		if (can_build)
-			view.prompt = "Scottish Builds: Deploy or reinforce armies.";
-		else
+		if (done) {
 			view.prompt = "Scottish Builds: Deploy or reinforce armies \u2014 done.";
+			gen_action(view, 'end_builds');
+		} else {
+			view.prompt = "Scottish Builds: Deploy or reinforce armies.";
+		}
 	},
 	area: function (where) {
 		let who;
@@ -2741,8 +2765,7 @@ states.english_builds = {
 		if (is_inactive_player(current))
 			return view.prompt = "Waiting for England to build.";
 		gen_action_undo(view);
-		gen_action(view, 'end_builds');
-		let can_build = false;
+		let done = true;
 		for (let where in game.rp) {
 			let rp = game.rp[where];
 			if (rp > 0) {
@@ -2751,16 +2774,18 @@ states.english_builds = {
 						let type = block_type(b);
 						if (type === 'nobles' || type === 'infantry') {
 							gen_action(view, 'block', b);
-							can_build = true;
+							done = false;
 						}
 					}
 				}
 			}
 		}
-		if (can_build)
-			view.prompt = "English Builds: Reinforce armies.";
-		else
+		if (done) {
 			view.prompt = "English Builds: Reinforce armies \u2014 done.";
+			gen_action(view, 'end_builds');
+		} else {
+			view.prompt = "English Builds: Reinforce armies.";
+		}
 	},
 	block: function (who) {
 		push_undo();
