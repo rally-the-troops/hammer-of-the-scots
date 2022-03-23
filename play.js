@@ -58,7 +58,9 @@ function on_log(text) {
 
 	text = text.replace(/^([A-Z]):/, '<span class="$1"> $1 </span>');
 
-	if (text.match(/^~ .* ~$/))
+	if (text.match(/^Scenario: /))
+		p.className = 'st', text = text.substring(10);
+	else if (text.match(/^~ .* ~$/))
 		p.className = 'br', text = text.substring(2, text.length-2);
 	else if (text.match(/^Start England turn/))
 		p.className = 'E';
