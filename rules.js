@@ -2905,6 +2905,7 @@ exports.setup = function (seed, scenario, options) {
 		setup_campaign();
 	else
 		throw new Error("Unknown scenario:", scenario);
+	log("Scenario: " + scenario);
 	start_year();
 	return game;
 }
