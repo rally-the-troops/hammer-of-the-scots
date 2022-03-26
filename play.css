@@ -70,6 +70,15 @@ header.your_turn { background-color: orange; }
 	background-color: darkslategray;
 	width: 1688px;
 	height: 1950px;
+	background-repeat: no-repeat;
+	background-size: cover;
+}
+
+html.avif #map { background-image: url("map.1x.avif") }
+html.jpeg #map { background-image: url("map.1x.jpg") }
+@media (min-resolution: 97dpi) {
+	html.avif #map { background-image: url("map.2x.avif") }
+	html.jpeg #map { background-image: url("map.2x.jpg") }
 }
 
 #map svg {
