@@ -2813,6 +2813,17 @@ function goto_english_feudal_levy() {
 }
 
 function end_winter_turn() {
+	if (count_english_nobles() === 0) {
+		game.victory = "Scotland wins by controlling all the nobles!";
+		game.result = SCOTLAND;
+	}
+	if (count_scottish_nobles() === 0) {
+		game.victory = "England wins by controlling all the nobles!";
+		game.result = ENGLAND;
+	}
+	if (game.victory)
+		return goto_game_over();
+
 	if (++game.year > game.end_year)
 		goto_game_over();
 	else
@@ -2839,6 +2850,7 @@ function goto_game_over() {
 			}
 		}
 	}
+	log("");
 	log(game.victory);
 	game.active = "None";
 	game.state = 'game_over';
