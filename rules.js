@@ -518,22 +518,22 @@ function eliminate_block(who, reason) {
 		if (reason === 'retreat') {
 			game.turn_log.push([game.location[who], "Captured"]);
 		} else if (reason === 'combat') {
-			game.flash = block_name(who) + " is captured.";
-			log(block_name(who) + " is captured.");
+			game.flash = block_name(who) + " was captured.";
+			log(block_name(who) + " was captured.");
 		} else {
-			log(block_name(who) + " is captured.");
+			log(block_name(who) + " was captured.");
 		}
 	} else {
 		if (reason === 'retreat') {
 			game.turn_log.push([game.location[who], "Eliminated"]);
 		} else if (reason === 'combat') {
-			game.flash = block_name(who) + " is eliminated.";
-			log(block_name(who) + " is eliminated.");
+			game.flash = block_name(who) + " was eliminated.";
+			log(block_name(who) + " was eliminated.");
 		} else {
 			if (block_owner(who) === ENGLAND)
-				log("English block is eliminated.");
+				log("English block was eliminated.");
 			else
-				log("Scottish block is eliminated.");
+				log("Scottish block was eliminated.");
 		}
 	}
 
@@ -546,7 +546,7 @@ function eliminate_block(who, reason) {
 			} else {
 				game.location[who] = null;
 				if (reason === 'combat') {
-					game.victory = "Scotland wins because king Edward II has died in battle!";
+					game.victory = "Scotland won because king Edward II has died in battle!";
 					game.result = SCOTLAND;
 				}
 			}
@@ -556,7 +556,7 @@ function eliminate_block(who, reason) {
 	} else if (who === KING) {
 		game.location[who] = null;
 		if (reason === 'combat' || reason === 'retreat') {
-			game.victory = "England wins because the Scottish king has died in battle!";
+			game.victory = "England won because the Scottish king has died in battle!";
 			game.result = ENGLAND
 		}
 	} else if (block_is_mortal(who) && (reason === 'combat' || reason === 'retreat')) {
@@ -604,10 +604,10 @@ const CELTIC_BLOCKS = [
 function celtic_unity_roll(who) {
 	let die = roll_d6();
 	if (die >= 5) {
-		log(who + " roll " + DIE_HIT[die] + " for Celtic unity and return to the draw pool.");
+		log(who + " rolled " + DIE_HIT[die] + " for Celtic unity and returned to the draw pool.");
 		disband(who);
 	} else {
-		log(who + " roll " + DIE_MISS[die] + " for Celtic unity \u2013 no effect.");
+		log(who + " rolled " + DIE_MISS[die] + " for Celtic unity \u2013 no effect.");
 	}
 }
 
@@ -758,7 +758,7 @@ function setup_campaign() {
 
 function start_year() {
 	log("");
-	log("Start Year " + game.year + ".");
+	log(".h1 Year " + game.year);
 
 	// Deal new cards
 	let deck = shuffle_deck();
@@ -772,7 +772,7 @@ function start_game_turn() {
 	game.turn = 6 - game.e_hand.length;
 
 	log("");
-	log("Start Turn " + game.turn + " of Year " + game.year + ".");
+	log(".h1 Turn " + game.turn + " of Year " + game.year);
 
 	// Reset movement and attack tracking state
 	game.truce = false;
@@ -787,11 +787,11 @@ function start_game_turn() {
 
 function end_game_turn() {
 	if (count_english_nobles() === 0) {
-		game.victory = "Scotland wins by controlling all the nobles!";
+		game.victory = "Scotland won by controlling all the nobles!";
 		game.result = SCOTLAND;
 	}
 	if (count_scottish_nobles() === 0) {
-		game.victory = "England wins by controlling all the nobles!";
+		game.victory = "England won by controlling all the nobles!";
 		game.result = ENGLAND;
 	}
 	if (game.victory)
@@ -875,8 +875,8 @@ states.play_card = {
 
 function reveal_cards() {
 	log("");
-	log("England plays " + CARDS[game.e_card].name + ".");
-	log("Scotland plays " + CARDS[game.s_card].name + ".");
+	log("England played " + CARDS[game.e_card].name + ".");
+	log("Scotland played " + CARDS[game.s_card].name + ".");
 	game.show_cards = true;
 
 	let ec = CARDS[game.e_card];
@@ -908,7 +908,7 @@ function reveal_cards() {
 
 function start_player_turn() {
 	log("");
-	log("Start " + game.active + " turn.");
+	log(".turn " + game.active);
 	reset_border_limits();
 	let ec = CARDS[game.e_card];
 	let sc = CARDS[game.s_card];
@@ -974,14 +974,14 @@ states.coronation_event = {
 			gen_action(view, 'return_of_the_king');
 	},
 	crown_bruce: function () {
-		log("Bruce is crowned King!");
+		log("Bruce was crowned King!");
 		game.scottish_king = true;
 		game.location[KING] = "Fife";
 		game.steps[KING] = block_max_steps(KING);
 		defect_comyn_nobles();
 	},
 	crown_comyn: function () {
-		log("Comyn is crowned King!");
+		log("Comyn was crowned King!");
 		game.scottish_king = true;
 		game.location[KING] = "Fife";
 		game.steps[KING] = block_max_steps(KING);
@@ -1014,7 +1014,7 @@ function defect_nobles(list) {
 		let who = find_noble(game.active, name);
 		if (is_on_map(who)) {
 			let where = game.location[who];
-			log(name + " defects.");
+			log(name + " defected.");
 			who = swap_blocks(who);
 			if (is_contested_area(where))
 				game.attacker[where] = block_owner(who);
@@ -1087,7 +1087,7 @@ states.herald = {
 		let who = find_noble(ENEMY[game.active], name);
 		let die = roll_d6();
 		if (die <= 4) {
-			log("Herald roll " + DIE_HIT[die] + " converts " + name + ".");
+			log("Herald roll " + DIE_HIT[die] + " converted " + name + ".");
 			let where = game.location[who];
 			who = swap_blocks(who);
 			if (is_contested_area(where)) {
@@ -1096,7 +1096,7 @@ states.herald = {
 				return;
 			}
 		} else {
-			log("Herald roll " + DIE_MISS[die] + " fails to convert " + name + ".");
+			log("Herald roll " + DIE_MISS[die] + " failed to convert " + name + ".");
 		}
 		end_player_turn();
 	},
@@ -1146,7 +1146,7 @@ states.victuals = {
 		--game.victuals;
 	},
 	end_builds: function () {
-		print_turn_log("victuals");
+		print_turn_log("victualed");
 		clear_undo();
 		delete game.victuals;
 		game.where = null;
@@ -1278,7 +1278,7 @@ states.pillage_builds = {
 }
 
 function end_pillage(where) {
-	print_turn_log("pillages");
+	print_turn_log("pillaged");
 	game.from = null;
 	game.where = null;
 	delete game.pillage;
@@ -1322,7 +1322,7 @@ states.sea_move = {
 		game.state = 'sea_move_to';
 	},
 	end_move_phase: function () {
-		print_turn_log("sea moves");
+		print_turn_log("sea moved");
 		clear_undo();
 		game.moves = 0;
 		game.from = null;
@@ -1409,7 +1409,7 @@ states.move_who = {
 	end_move_phase: function () {
 		clear_undo();
 		game.moves = 0;
-		print_turn_log("moves");
+		print_turn_log("moved");
 		end_player_turn();
 	},
 	undo: pop_undo
@@ -1473,7 +1473,7 @@ states.move_where = {
 			return;
 		}
 		if (game.who === NORSE) {
-			log("The Norse move by sea.");
+			log("The Norse moved by sea.");
 			game.location[game.who] = to;
 			game.moved[game.who] = true;
 			if (is_contested_area(to)) {
@@ -1510,10 +1510,10 @@ function end_move() {
 	if (game.distance > 0) {
 		let to = game.location[game.who];
 		if (game.origin === ENGLAND || to === ENGLAND) {
-			log(game.active + " crosses the Anglo-Scottish border.");
+			log(game.active + " crossed the Anglo-Scottish border.");
 			game.moves --;
 		} else if (!game.activated.includes(game.origin)) {
-			log(game.active + " activates " + game.origin + ".");
+			log(game.active + " activated " + game.origin + ".");
 			game.activated.push(game.origin);
 			game.moves --;
 		}
@@ -1559,9 +1559,9 @@ function start_battle(where, reason) {
 	game.flash = "";
 	log("");
 	if (reason !== 'battle')
-		log("Defection battle in " + where + ".");
+		log("Defection battle in " + where);
 	else
-		log("Battle in " + where + ".");
+		log("Battle in " + where);
 	game.where = where;
 	game.battle_round = 0;
 	game.state = 'battle_round';
@@ -1577,7 +1577,7 @@ function resume_battle() {
 
 function end_battle() {
 	if (game.turn_log && game.turn_log.length > 0)
-		print_turn_log_no_active("Retreats from " + game.where + ":");
+		print_turn_log_no_active("Retreated from " + game.where + ":");
 
 	game.flash = "";
 	game.battle_round = 0;
@@ -1590,7 +1590,7 @@ function end_battle() {
 		victor = ENEMY[game.active];
 	else if (is_enemy_area(game.where))
 		victor = ENEMY[game.active];
-	log(victor + " wins the battle in " + game.where + "!");
+	log(victor + " won the battle in " + game.where + "!");
 
 	goto_retreat();
 }
@@ -1604,7 +1604,7 @@ function bring_on_reserves() {
 function start_battle_round() {
 	if (++game.battle_round <= 3) {
 		if (game.turn_log && game.turn_log.length > 0)
-			print_turn_log_no_active("Retreats from " + game.where + ":");
+			print_turn_log_no_active("Retreated from " + game.where + ":");
 		game.turn_log = [];
 
 		log("~ Battle Round " + game.battle_round + " ~");
@@ -1684,8 +1684,8 @@ function pump_battle_round() {
 }
 
 function pass_with_block(b) {
-	game.flash = block_name(b) + " passes.";
-	log_battle(block_name(b) + " passes.");
+	game.flash = block_name(b) + " passed.";
+	log_battle(block_name(b) + " passed.");
 	game.moved[b] = true;
 	resume_battle();
 }
@@ -1716,15 +1716,15 @@ function fire_with_block(b) {
 		}
 	}
 
-	game.flash = name + " fires " + rolls.join(" ") + " ";
+	game.flash = name + " fired " + rolls.join(" ") + " ";
 	if (game.hits === 0)
-		game.flash += "and misses.";
+		game.flash += "and missed.";
 	else if (game.hits === 1)
-		game.flash += "and scores 1 hit.";
+		game.flash += "and scored 1 hit.";
 	else
-		game.flash += "and scores " + game.hits + " hits.";
+		game.flash += "and scored " + game.hits + " hits.";
 
-	log_battle(name + " fires " + rolls.join("") + ".");
+	log_battle(name + " fired " + rolls.join("") + ".");
 
 	if (game.hits > 0) {
 		game.active = ENEMY[game.active];
@@ -1771,8 +1771,8 @@ function goto_battle_hits() {
 }
 
 function apply_hit(who) {
-	game.flash = block_name(who) + " takes a hit.";
-	log_battle(block_name(who) + " takes a hit.");
+	game.flash = block_name(who) + " took a hit.";
+	log_battle(block_name(who) + " took a hit.");
 	reduce_block(who, 'combat');
 	game.hits--;
 	if (game.victory)
@@ -1852,7 +1852,7 @@ states.retreat = {
 		for (let b in BLOCKS)
 			if (game.location[b] === game.where && block_owner(b) === game.active)
 				eliminate_block(b, 'retreat');
-		print_turn_log("retreats");
+		print_turn_log("retreated");
 		goto_regroup();
 	},
 	block: function (who) {
@@ -1932,11 +1932,11 @@ states.retreat_in_battle = {
 	area: function (to) {
 		game.turn_log.push([game.active, to]);
 		if (game.who === NORSE) {
-			game.flash = "Norse retreat to " + to + ".";
+			game.flash = "Norse retreated to " + to + ".";
 			log_battle(game.flash);
 			game.location[game.who] = to;
 		} else {
-			game.flash = block_name(game.who) + " retreats.";
+			game.flash = block_name(game.who) + " retreated.";
 			log_battle(game.flash);
 			move_block(game.who, game.where, to);
 		}
@@ -1979,7 +1979,7 @@ states.regroup = {
 		game.state = 'regroup_to';
 	},
 	end_regroup: function () {
-		print_turn_log("regroups");
+		print_turn_log("regrouped");
 		game.attacker[game.where] = null;
 		game.where = null;
 		clear_undo();
@@ -2052,11 +2052,11 @@ function count_non_noble_english_blocks_on_map() {
 function goto_border_raids() {
 	game.active = ENGLAND;
 	if (is_enemy_area(ENGLAND)) {
-		log("Scotland border raids.");
+		log("Scotland raided in England.");
 		if (count_non_noble_english_blocks_on_map() > 0) {
 			game.state = 'border_raids';
 		} else {
-			log("England has no non-noble blocks in play.");
+			log("England had no non-noble blocks in play.");
 			end_game_turn();
 		}
 	} else {
@@ -2085,7 +2085,7 @@ states.border_raids = {
 function goto_winter_turn() {
 	game.moved = {};
 	log("");
-	log("Start Winter of " + game.year + ".");
+	log(".h1 Winter of " + game.year);
 	log("");
 	english_nobles_go_home();
 }
@@ -2277,7 +2277,7 @@ function end_comyn() {
 	game.active = game.going_home;
 	delete game.comyn_defected;
 	if (game.active === ENGLAND) {
-		print_turn_log_no_count("English nobles go home:");
+		print_turn_log_no_count("English nobles went home:");
 		scottish_nobles_go_home();
 	} else {
 		goto_moray();
@@ -2331,7 +2331,7 @@ function king_can_go_home(current) {
 }
 
 function goto_scottish_king() {
-	print_turn_log_no_count("Scottish nobles go home:");
+	print_turn_log_no_count("Scottish nobles went home:");
 
 	// We can end winter early if Moray and Wallace are dead or on the map, and Moray is not overstacked
 	if (game.year === game.end_year) {
@@ -2371,14 +2371,14 @@ states.scottish_king = {
 		}
 	},
 	disband: function () {
-		log("Scottish King disbands.");
+		log("Scottish King disbanded.");
 		disband(KING);
 		game.who = null;
 		goto_edward_wintering();
 	},
 	area: function (to) {
 		if (game.location[KING] !== to) {
-			log("Scottish King moves to " + to + ".");
+			log("Scottish King moved to " + to + ".");
 			game.location[KING] = to;
 		}
 		game.who = null;
@@ -2399,12 +2399,12 @@ function goto_edward_wintering() {
 	}
 
 	if (game.edward === 1 && game.year === 1306) {
-		log("Edward I dies.");
+		log("Edward I died.");
 		game.edward = 2;
 	}
 
 	if (is_on_map(EDWARD)) {
-		log("Edward disbands.");
+		log("Edward disbanded.");
 		disband(EDWARD);
 	}
 
@@ -2413,7 +2413,7 @@ function goto_edward_wintering() {
 }
 
 function disband_edward() {
-	log("Edward disbands.");
+	log("Edward disbanded.");
 	disband(EDWARD);
 	game.who = null;
 	game.wintered_last_year = false;
@@ -2421,7 +2421,7 @@ function disband_edward() {
 }
 
 function winter_edward() {
-	log("Edward winters in " + game.location[EDWARD] + ".");
+	log("Edward wintered in " + game.location[EDWARD] + ".");
 	game.who = null;
 	game.wintered_last_year = true;
 	goto_english_disbanding();
@@ -2487,7 +2487,7 @@ function goto_english_disbanding() {
 		game.state = 'english_disbanding';
 		clear_undo();
 	} else {
-		print_turn_log("disbands");
+		print_turn_log("disbanded");
 		goto_wallace();
 	}
 }
@@ -2540,7 +2540,7 @@ states.english_disbanding = {
 		disband(who);
 	},
 	end_disbanding: function () {
-		print_turn_log("disbands");
+		print_turn_log("disbanded");
 		clear_undo();
 		goto_wallace();
 	},
@@ -2552,9 +2552,9 @@ function heal_wallace() {
 	game.steps[WALLACE] = Math.min(block_max_steps(WALLACE), game.steps[WALLACE] + 2);
 	let n = game.steps[WALLACE] - old;
 	if (n === 1)
-		log("Wallace gains 1 step.");
+		log("Wallace gained 1 step.");
 	else if (n === 2)
-		log("Wallace gains 2 steps.");
+		log("Wallace gained 2 steps.");
 }
 
 function goto_wallace() {
@@ -2580,7 +2580,7 @@ states.wallace = {
 	},
 	area: function (to) {
 		if (to === "Selkirk") {
-			log("Wallace goes home to " + to + ".");
+			log("Wallace went home to " + to + ".");
 			heal_wallace();
 		}
 		game.location[WALLACE] = to;
@@ -2604,7 +2604,7 @@ function goto_scottish_disbanding() {
 		game.state = 'scottish_disbanding';
 		clear_undo();
 	} else {
-		print_turn_log("disbands");
+		print_turn_log("disbanded");
 		goto_scottish_builds();
 	}
 }
@@ -2654,7 +2654,7 @@ states.scottish_disbanding = {
 		disband(who);
 	},
 	end_disbanding: function () {
-		print_turn_log("disbands");
+		print_turn_log("disbanded");
 		clear_undo();
 		goto_scottish_builds();
 	},
@@ -2742,7 +2742,7 @@ states.scottish_builds = {
 		++game.steps[who];
 	},
 	end_builds: function () {
-		print_turn_log("builds");
+		print_turn_log("built");
 		game.rp = null;
 		clear_undo();
 		goto_english_builds();
@@ -2796,7 +2796,7 @@ states.english_builds = {
 	},
 	end_builds: function () {
 		clear_undo();
-		print_turn_log("builds");
+		print_turn_log("built");
 		game.rp = null;
 		goto_english_feudal_levy();
 	},
@@ -2814,11 +2814,11 @@ function goto_english_feudal_levy() {
 
 function end_winter_turn() {
 	if (count_english_nobles() === 0) {
-		game.victory = "Scotland wins by controlling all the nobles!";
+		game.victory = "Scotland won by controlling all the nobles!";
 		game.result = SCOTLAND;
 	}
 	if (count_scottish_nobles() === 0) {
-		game.victory = "England wins by controlling all the nobles!";
+		game.victory = "England won by controlling all the nobles!";
 		game.result = ENGLAND;
 	}
 	if (game.victory)
@@ -2835,17 +2835,17 @@ function goto_game_over() {
 		let e = count_english_nobles();
 		let s = count_scottish_nobles();
 		if (e > s) {
-			game.victory = "England wins by controlling the most nobles!";
+			game.victory = "England won by controlling the most nobles!";
 			game.result = ENGLAND;
 		} else if (s > e) {
-			game.victory = "Scotland wins by controlling the most nobles!";
+			game.victory = "Scotland won by controlling the most nobles!";
 			game.result = SCOTLAND;
 		} else {
 			if (is_on_map(WALLACE)) {
-				game.victory = "Tied for control of nobles. Scotland wins because Wallace is on the map!";
+				game.victory = "Tied for control of nobles. Scotland won because Wallace was on the map!";
 				game.result = SCOTLAND;
 			} else {
-				game.victory = "Tied for control of nobles. England wins because Wallace is dead or in the draw pool!";
+				game.victory = "Tied for control of nobles. England won because Wallace was dead or in the draw pool!";
 				game.result = ENGLAND;
 			}
 		}
@@ -2917,7 +2917,7 @@ exports.setup = function (seed, scenario, options) {
 		setup_campaign();
 	else
 		throw new Error("Unknown scenario:", scenario);
-	log("Scenario: " + scenario);
+	log(".h1 " + scenario);
 	start_year();
 	return game;
 }

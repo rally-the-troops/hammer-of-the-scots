@@ -70,6 +70,15 @@ function on_log(text) {
 		p.className = 'st', text = text.replace(/\.$/, "");
 	else if (text.match(/^(Battle in|Defection battle in)/))
 		p.className = 'bs';
+	else if (text.match(/^.h1 /)) {
+		p.className = 'st', text = text.substring(4);
+	}
+	else if (text.match(/^.turn England/)) {
+		p.className = 'E', text = text.substring(6);
+	}
+	else if (text.match(/^.turn Scotland/)) {
+		p.className = 'S', text = text.substring(6);
+	}
 
 	if (text.match(/^Start /))
 		text = text.substring(6);
