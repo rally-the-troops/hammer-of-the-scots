@@ -8,8 +8,8 @@ header.your_turn { background-color: orange; }
 
 #log { background-color: whitesmoke; }
 #log .st { background-color: darkslategray; color: white; font-weight: bold; }
-#log .S { background-color: pink; }
-#log .E { background-color: lightblue; }
+#log .S { background-color: lightblue; }
+#log .E { background-color: pink; }
 #log .bs { background-color: gainsboro; }
 #log .br { font-style: italic; text-decoration: underline; }
 
