@@ -5,8 +5,10 @@ header.your_turn { background-color: orange; }
 #role_England .role_name { background-color: salmon; }
 #role_Scotland .role_name { background-color: skyblue; }
 #turn_info { background-color: gainsboro; }
+.role_vp { float: right; }
 
 #log { background-color: whitesmoke; }
+#log div { padding-left: 20px; text-indent: -12px; }
 #log .st { background-color: darkslategray; color: white; font-weight: bold; }
 #log .S { background-color: lightblue; }
 #log .E { background-color: pink; }
@@ -14,6 +16,15 @@ header.your_turn { background-color: orange; }
 #log .br { font-style: italic; text-decoration: underline; }
 
 /* CARDS */
+
+.hand {
+	margin: 25px;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	min-height: 350px;
+	gap: 20px;
+}
 
 .card_back{background-image: url('cards/card_back.svg')}
 .card_truce{background-image:url('cards/card_truce.jpg')}
@@ -26,6 +37,8 @@ header.your_turn { background-color: orange; }
 .card_3{background-image:url('cards/card_3.jpg')}
 
 .card {
+	background-size: cover;
+	background-repeat: no-repeat;
 	width: 225px;
 	height: 350px;
 	border-radius: 10px;
@@ -41,6 +54,18 @@ header.your_turn { background-color: orange; }
 
 .card.enabled:hover {
 	transform: scale(1.1);
+}
+
+.card.enabled {
+	cursor: pointer;
+}
+
+.card.disabled {
+	filter: grayscale(100%);
+}
+
+.role_info {
+	overflow: clip; /* clip dropshadow from filter:grayscale() stacking context */
 }
 
 .role_info { padding: 15px; }
