@@ -258,6 +258,7 @@ function build_battle_block(b, block) {
 	menu.classList.add("battle_menu");
 	menu.appendChild(element);
 	menu.appendChild(menu_list);
+	menu.block = b;
 	ui.battle_menu[b] = menu;
 }
 
@@ -536,6 +537,25 @@ function update_cards() {
 		document.getElementById("scotland_card").className = "show card " + CARDS[view.s_card].image;
 }
 
+function compare_blocks(a, b) {
+	let aa = BLOCKS[a].combat;
+	let bb = BLOCKS[b].combat;
+	if (aa === bb)
+		return (a < b) ? -1 : (a > b) ? 1 : 0;
+	return (aa < bb) ? -1 : (aa > bb) ? 1 : 0;
+}
+
+function insert_battle_block(root, node, block) {
+	for (let i = 0; i < root.children.length; ++i) {
+		let prev = root.children[i];
+		if (compare_blocks(prev.block, block) > 0) {
+			root.insertBefore(node, prev);
+			return;
+		}
+	}
+	root.appendChild(node);
+}
+
 function update_battle() {
 	function fill_cell(name, list, reserve) {
 		let cell = window[name];
@@ -544,6 +564,9 @@ function update_battle() {
 
 		for (let block of list) {
 			ui.present.add(block);
+
+			if (!cell.contains(ui.battle_menu[block]))
+				insert_battle_block(cell, ui.battle_menu[block], block);
 
 			if (block === view.who)
 				ui.battle_block[block].classList.add("selected");
@@ -583,10 +606,7 @@ function update_battle() {
 		}
 
 		for (let b in BLOCKS) {
-			if (ui.present.has(b)) {
-				if (!cell.contains(ui.battle_menu[b]))
-					cell.appendChild(ui.battle_menu[b]);
-			} else {
+			if (!ui.present.has(b)) {
 				if (cell.contains(ui.battle_menu[b]))
 					cell.removeChild(ui.battle_menu[b]);
 			}
@@ -595,21 +615,13 @@ function update_battle() {
 
 	if (player === ENGLAND) {
 		fill_cell("FR", view.battle.ER, true);
-		fill_cell("FA", view.battle.EA, false);
-		fill_cell("FB", view.battle.EB, false);
-		fill_cell("FC", view.battle.EC, false);
-		fill_cell("EA", view.battle.SA, false);
-		fill_cell("EB", view.battle.SB, false);
-		fill_cell("EC", view.battle.SC, false);
+		fill_cell("FF", view.battle.EF, false);
+		fill_cell("EF", view.battle.SF, false);
 		fill_cell("ER", view.battle.SR, true);
 	} else {
 		fill_cell("ER", view.battle.ER, true);
-		fill_cell("EA", view.battle.EA, false);
-		fill_cell("EB", view.battle.EB, false);
-		fill_cell("EC", view.battle.EC, false);
-		fill_cell("FA", view.battle.SA, false);
-		fill_cell("FB", view.battle.SB, false);
-		fill_cell("FC", view.battle.SC, false);
+		fill_cell("EF", view.battle.EF, false);
+		fill_cell("FF", view.battle.SF, false);
 		fill_cell("FR", view.battle.SR, true);
 	}
 }

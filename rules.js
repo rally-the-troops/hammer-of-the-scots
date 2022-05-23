@@ -2864,8 +2864,8 @@ states.game_over = {
 
 function make_battle_view() {
 	let battle = {
-		EA: [], EB: [], EC: [], ER: [],
-		SA: [], SB: [], SC: [], SR: [],
+		EF: [], ER: [],
+		SF: [], SR: [],
 		flash: game.flash
 	};
 
@@ -2879,13 +2879,9 @@ function make_battle_view() {
 	}
 
 	fill_cell(battle.ER, ENGLAND, b => is_battle_reserve(b));
-	fill_cell(battle.EA, ENGLAND, b => !is_battle_reserve(b) && block_initiative(b) === 'A');
-	fill_cell(battle.EB, ENGLAND, b => !is_battle_reserve(b) && block_initiative(b) === 'B');
-	fill_cell(battle.EC, ENGLAND, b => !is_battle_reserve(b) && block_initiative(b) === 'C');
+	fill_cell(battle.EF, ENGLAND, b => !is_battle_reserve(b));
 	fill_cell(battle.SR, SCOTLAND, b => is_battle_reserve(b));
-	fill_cell(battle.SA, SCOTLAND, b => !is_battle_reserve(b) && block_initiative(b) === 'A');
-	fill_cell(battle.SB, SCOTLAND, b => !is_battle_reserve(b) && block_initiative(b) === 'B');
-	fill_cell(battle.SC, SCOTLAND, b => !is_battle_reserve(b) && block_initiative(b) === 'C');
+	fill_cell(battle.SF, SCOTLAND, b => !is_battle_reserve(b));
 
 	return battle;
 }
