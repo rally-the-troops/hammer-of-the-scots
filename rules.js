@@ -1620,7 +1620,7 @@ function start_battle_round() {
 		if (game.battle_round === 2) {
 			if (count_defenders() === 0) {
 				log("Defending main force was eliminated.");
-				log("The attacker is now the defender.");
+				log("Battlefield control changed.");
 				game.attacker[game.where] = ENEMY[game.attacker[game.where]];
 			} else if (count_attackers() === 0) {
 				log("Attacking main force was eliminated.");
