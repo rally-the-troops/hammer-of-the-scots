@@ -2886,10 +2886,6 @@ function make_battle_view() {
 	return battle;
 }
 
-exports.ready = function (scenario, options, players) {
-	return players.length === 2;
-}
-
 exports.setup = function (seed, scenario, options) {
 	game = {
 		seed: seed,
