@@ -1797,6 +1797,23 @@ states.battle_round = {
 function goto_battle_hits() {
 	game.battle_list = list_victims(game.active)
 
+	if (game.autohit) {
+		let n = 0
+		while (game.hits >= game.battle_list.length && game.battle_list.length > 0) {
+			while (game.battle_list.length > 0) {
+				let who = game.battle_list.pop()
+				log_battle(block_name(who) + " took a hit.")
+				reduce_block(who, 'combat')
+				game.hits--
+				++n
+			}
+			if (game.hits > 0)
+				game.battle_list = list_victims(game.active)
+		}
+		if (n > 0)
+			game.flash += ` Assigned ${n}.`
+	}
+
 	if (game.battle_list.length === 0)
 		resume_battle()
 	else
@@ -2941,6 +2958,7 @@ exports.setup = function (seed, scenario, options) {
 		who: null,
 		where: null,
 	}
+
 	if (scenario === "The Bruce")
 		setup_the_bruce()
 	else if (scenario === "Braveheart")
@@ -2949,6 +2967,10 @@ exports.setup = function (seed, scenario, options) {
 		setup_campaign()
 	else
 		throw new Error("Unknown scenario:", scenario)
+
+	if (options.autohit)
+		game.autohit = 1
+
 	log(".h1 " + scenario)
 	start_year()
 	return game
