@@ -46,7 +46,9 @@ let states = {}
 let game = null
 
 function random(n) {
-	return Math.floor(((game.seed = game.seed * 48271 % 0x7fffffff) / 0x7fffffff) * n)
+	if (game.rng === 1)
+		return Math.floor(((game.seed = game.seed * 48271 % 0x7fffffff) / 0x7fffffff) * n)
+	return (game.seed = game.seed * 200105 % 34359738337) % n
 }
 
 function log(...args) {
@@ -2958,6 +2960,9 @@ exports.setup = function (seed, scenario, options) {
 		who: null,
 		where: null,
 	}
+
+	if (options.rng)
+		game.rng = options.rng
 
 	if (scenario === "The Bruce")
 		setup_the_bruce()
