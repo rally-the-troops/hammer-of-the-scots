@@ -143,10 +143,7 @@ function on_click_map_block(evt) {
 }
 
 function is_battle_reserve(who, list) {
-	for (let [b, s, m] of list)
-		if (who === b)
-			return true
-	return false
+	return list.includes(who)
 }
 
 function on_focus_battle_block(evt) {
