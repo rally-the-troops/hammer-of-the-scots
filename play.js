@@ -449,23 +449,39 @@ function update_map() {
 		layout[area] = { north: [], south: [] }
 
 	for (let b in view.location) {
+		if (view.location[b] === null && BLOCKS[b].mortal) {
+			let element = ui.blocks[b]
+			if (BLOCKS[b].owner === SCOTLAND)
+				layout[SCOTLAND_BAG].north.push(element)
+			else
+				layout[ENGLAND_BAG].south.push(element)
+		}
+	}
+
+	for (let b in view.location) {
 		let info = BLOCKS[b]
 		let element = ui.blocks[b]
 		let area = view.location[b]
-		if (area in AREAS) {
+		if (area in AREAS || BLOCKS[b].mortal) {
 			let moved = view.moved[b] ? " moved" : ""
-			if (is_known_block(b)) {
+			if (is_known_block(b) || area === null) {
 				let image = " block_" + info.image
 				let steps = " r" + (info.steps - view.steps[b])
 				let known = " known"
+				if (area === null) {
+					moved = " moved"
+					steps = " r0"
+				}
 				element.classList = info.owner + known + " block" + image + steps + moved
 			} else {
 				element.classList = info.owner + " block" + moved
 			}
-			if (info.owner === SCOTLAND)
-				layout[area].north.push(element)
-			else
-				layout[area].south.push(element)
+			if (area !== null) {
+				if (info.owner === SCOTLAND)
+					layout[area].north.push(element)
+				else
+					layout[area].south.push(element)
+			}
 			show_block(element)
 		} else {
 			hide_block(element)
