@@ -9,11 +9,12 @@ header.your_turn { background-color: orange; }
 
 #log { background-color: whitesmoke; }
 #log div { padding-left: 20px; text-indent: -12px; }
-#log .st { background-color: darkslategray; color: white; font-weight: bold; }
+#log div.i { padding-left: 32px; text-indent: -12px; }
+#log .h1 { background-color: darkslategray; color: white; font-weight: bold; }
 #log .S { background-color: lightblue; }
 #log .E { background-color: pink; }
-#log .bs { background-color: gainsboro; }
-#log .br { font-style: italic; text-decoration: underline; }
+#log .h3 { background-color: gainsboro; }
+#log .h4 { font-style: italic; text-decoration: underline; }
 
 /* CARDS */
 

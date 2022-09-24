@@ -1,4 +1,4 @@
-"use strict";
+"use strict"
 
 const CARDS = {
 	1: {
@@ -51,11 +51,15 @@ const CARDS = {
 	23: { name: "a 1", moves: 1, image: "card_1" },
 	24: { name: "a 1", moves: 1, image: "card_1" },
 	25: { name: "a 1", moves: 1, image: "card_1" },
-};
+}
 
-let BLOCKS = {}
+let block_index = {}
+let BLOCKS = []
 
-let AREAS = {
+let AREAS_XY = {
+	"Nowhere": {},
+	"E. Bag": { x: 150, y: 1900 },
+	"S. Bag": { x: 150, y: 50 },
 	"England": { x: 1360, y: 1750 },
 	"Ross": { x: 583, y: 376 },
 	"Garmoran": { x: 466, y: 573 },
@@ -79,79 +83,84 @@ let AREAS = {
 	"Galloway": { x: 685, y: 1667 },
 	"Annan": { x: 946, y: 1566 },
 	"Teviot": { x: 1151, y: 1424 },
-
-	"E. Bag": { x: 150, y: 1900 },
-	"S. Bag": { x: 150, y: 50 },
 }
 
-let BORDERS = {};
+let area_index = []
+let AREAS = []
 
-(function () {
+let BORDERS = []
+
+;(function () {
 	function border(A,B,T) {
+		A = area_index[A]
+		B = area_index[B]
 		if (A > B)
-			[A, B] = [B, A];
-		let id = A + "/" + B;
-		AREAS[A].exits.push(B);
-		AREAS[B].exits.push(A);
-		BORDERS[id] = T;
+			[A, B] = [B, A]
+		let id = A * 100 + B
+		AREAS[A].exits.push(B)
+		AREAS[B].exits.push(A)
+		BORDERS[id] = T
 	}
 
-	for (let a in AREAS) {
-		AREAS[a].cathedral = false;
-		AREAS[a].home = null;
-		AREAS[a].coastal = false;
-		AREAS[a].exits = [];
+	for (let a in AREAS_XY) {
+		let id = area_index[a] = AREAS.length
+		AREAS[id] = AREAS_XY[a]
+		AREAS[id].name = a
+		AREAS[id].cathedral = false
+		AREAS[id].home = null
+		AREAS[id].coastal = false
+		AREAS[id].exits = []
 	}
 
-	AREAS["Strathspey"].cathedral = true;
-	AREAS["Lennox"].cathedral = true;
-	AREAS["Fife"].cathedral = true;
+	AREAS_XY["Strathspey"].cathedral = true
+	AREAS_XY["Lennox"].cathedral = true
+	AREAS_XY["Fife"].cathedral = true
 
-	AREAS["Ross"].home = "Ross";
-	AREAS["Moray"].home = "Moray";
-	AREAS["Buchan"].home = "Buchan";
-	AREAS["Lochaber"].home = "Comyn";
-	AREAS["Badenoch"].home = "Comyn";
-	AREAS["Mar"].home = "Mar";
-	AREAS["Angus"].home = "Angus";
-	AREAS["Argyll"].home = "Argyll";
-	AREAS["Atholl"].home = "Atholl";
-	AREAS["Lennox"].home = "Lennox";
-	AREAS["Mentieth"].home = "Mentieth";
-	AREAS["Carrick"].home = "Bruce";
-	AREAS["Lanark"].home = "Steward";
-	AREAS["Dunbar"].home = "Dunbar";
-	AREAS["Galloway"].home = "Galloway";
-	AREAS["Annan"].home = "Bruce";
+	AREAS_XY["Ross"].home = "Ross"
+	AREAS_XY["Moray"].home = "Moray"
+	AREAS_XY["Buchan"].home = "Buchan"
+	AREAS_XY["Lochaber"].home = "Comyn"
+	AREAS_XY["Badenoch"].home = "Comyn"
+	AREAS_XY["Mar"].home = "Mar"
+	AREAS_XY["Angus"].home = "Angus"
+	AREAS_XY["Argyll"].home = "Argyll"
+	AREAS_XY["Atholl"].home = "Atholl"
+	AREAS_XY["Lennox"].home = "Lennox"
+	AREAS_XY["Mentieth"].home = "Mentieth"
+	AREAS_XY["Carrick"].home = "Bruce"
+	AREAS_XY["Lanark"].home = "Steward"
+	AREAS_XY["Dunbar"].home = "Dunbar"
+	AREAS_XY["Galloway"].home = "Galloway"
+	AREAS_XY["Annan"].home = "Bruce"
 
-	AREAS["England"].limit = 0;
-	AREAS["Ross"].limit = 1;
-	AREAS["Garmoran"].limit = 0;
-	AREAS["Moray"].limit = 2;
-	AREAS["Strathspey"].limit = 1;
-	AREAS["Buchan"].limit = 2;
-	AREAS["Lochaber"].limit = 1;
-	AREAS["Badenoch"].limit = 2;
-	AREAS["Mar"].limit = 1;
-	AREAS["Angus"].limit = 2;
-	AREAS["Argyll"].limit = 2;
-	AREAS["Atholl"].limit = 1;
-	AREAS["Lennox"].limit = 1;
-	AREAS["Mentieth"].limit = 3;
-	AREAS["Fife"].limit = 2;
-	AREAS["Carrick"].limit = 1;
-	AREAS["Lanark"].limit = 2;
-	AREAS["Lothian"].limit = 2;
-	AREAS["Selkirk"].limit = 0;
-	AREAS["Dunbar"].limit = 2;
-	AREAS["Galloway"].limit = 1;
-	AREAS["Annan"].limit = 2;
-	AREAS["Teviot"].limit = 1;
+	AREAS_XY["England"].limit = 0
+	AREAS_XY["Ross"].limit = 1
+	AREAS_XY["Garmoran"].limit = 0
+	AREAS_XY["Moray"].limit = 2
+	AREAS_XY["Strathspey"].limit = 1
+	AREAS_XY["Buchan"].limit = 2
+	AREAS_XY["Lochaber"].limit = 1
+	AREAS_XY["Badenoch"].limit = 2
+	AREAS_XY["Mar"].limit = 1
+	AREAS_XY["Angus"].limit = 2
+	AREAS_XY["Argyll"].limit = 2
+	AREAS_XY["Atholl"].limit = 1
+	AREAS_XY["Lennox"].limit = 1
+	AREAS_XY["Mentieth"].limit = 3
+	AREAS_XY["Fife"].limit = 2
+	AREAS_XY["Carrick"].limit = 1
+	AREAS_XY["Lanark"].limit = 2
+	AREAS_XY["Lothian"].limit = 2
+	AREAS_XY["Selkirk"].limit = 0
+	AREAS_XY["Dunbar"].limit = 2
+	AREAS_XY["Galloway"].limit = 1
+	AREAS_XY["Annan"].limit = 2
+	AREAS_XY["Teviot"].limit = 1
 
 	function red(A,B) { border(A,B,"minor"); }
 	function black(A,B) { border(A,B,"major"); }
-	function northsea(A) { AREAS[A].coastal = true; }
-	function irishsea(A) { AREAS[A].coastal = true; }
+	function northsea(A) { AREAS_XY[A].coastal = true; }
+	function irishsea(A) { AREAS_XY[A].coastal = true; }
 
 	black("Buchan", "Angus")
 	black("Buchan", "Mar")
@@ -225,86 +234,89 @@ let BORDERS = {};
 	irishsea("Annan")
 
 	function block(owner, type, name, move, combat, steps, mortal, image) {
-		let id = name;
+		let sid = name
 		if (type === 'nobles')
-			id = name + "/" + owner[0];
-		let item = {
+			sid = name + "/" + owner[0]
+		let id = block_index[sid] = BLOCKS.length
+		BLOCKS[id] = {
+			sid: sid,
 			owner: owner,
 			type: type,
 			name: name,
 			move: move,
 			combat: combat,
+			initiative: combat[0],
+			fire_power: combat[1] | 0,
 			steps: steps,
 			mortal: mortal,
 			image: image,
 		}
-		BLOCKS[id] = item;
 	}
 
-	block("Scotland",	"wallace",	"Wallace",		3,	"A3", 	4,	true,	11);
-	block("Scotland",	"king",		"King",			3,	"A3", 	4,	true,	12);
-	block("Scotland",	"infantry",	"Douglas",		2,	"C3", 	4,	false,	13);
-	block("Scotland",	"infantry",	"Campbell",		2,	"C2", 	4,	false,	14);
-	block("Scotland",	"infantry",	"Graham",		2,	"C2", 	4,	false,	15);
-	block("Scotland",	"infantry",	"MacDonald",		2,	"C3", 	3,	false,	16);
-	block("Scotland",	"infantry",	"Lindsay",		2,	"C2", 	3,	false,	17);
+	block("Scotland",	"wallace",	"Wallace",		3,	"A3", 	4,	true,	11)
+	block("Scotland",	"king",		"King",			3,	"A3", 	4,	true,	12)
+	block("Scotland",	"infantry",	"Douglas",		2,	"C3", 	4,	false,	13)
+	block("Scotland",	"infantry",	"Campbell",		2,	"C2", 	4,	false,	14)
+	block("Scotland",	"infantry",	"Graham",		2,	"C2", 	4,	false,	15)
+	block("Scotland",	"infantry",	"MacDonald",		2,	"C3", 	3,	false,	16)
+	block("Scotland",	"infantry",	"Lindsay",		2,	"C2", 	3,	false,	17)
 
-	block("Scotland",	"infantry",	"Fraser",		2,	"C3", 	3,	false,	21);
-	block("Scotland",	"infantry",	"Barclay",		2,	"C2", 	4,	false,	22);
-	block("Scotland",	"infantry",	"Grant",		2,	"C2", 	3,	false,	23);
-	block("Scotland",	"cavalry",	"Keith",		3,	"B1", 	3,	false,	24);
-	block("Scotland",	"archers",	"Etterick",		3,	"B2", 	2,	false,	25);
-	block("Scotland",	"norse",	"Norse",		0,	"A2", 	3,	true,	26);
-	block("Scotland",	"knights",	"French Knights",	2,	"B3", 	4,	true,	27);
+	block("Scotland",	"infantry",	"Fraser",		2,	"C3", 	3,	false,	21)
+	block("Scotland",	"infantry",	"Barclay",		2,	"C2", 	4,	false,	22)
+	block("Scotland",	"infantry",	"Grant",		2,	"C2", 	3,	false,	23)
+	block("Scotland",	"cavalry",	"Keith",		3,	"B1", 	3,	false,	24)
+	block("Scotland",	"archers",	"Etterick",		3,	"B2", 	2,	false,	25)
+	block("Scotland",	"norse",	"Norse",		0,	"A2", 	3,	true,	26)
+	block("Scotland",	"knights",	"French Knights",	2,	"B3", 	4,	true,	27)
 
-	block("Scotland",	"nobles",	"Comyn",		2,	"B2", 	4,	false,	31);
-	block("Scotland",	"moray",	"Moray",		2,	"B2", 	3,	true,	32);
-	block("Scotland",	"nobles",	"Angus",		2,	"B2", 	3,	false,	33);
-	block("Scotland",	"nobles",	"Argyll",		2,	"B2", 	3,	false,	34);
-	block("Scotland",	"nobles",	"Bruce",		2,	"B2", 	4,	false,	35);
-	block("Scotland",	"nobles",	"Mar",			2,	"B2", 	3,	false,	36);
-	block("Scotland",	"nobles",	"Lennox",		2,	"B2", 	3,	false,	37);
+	block("Scotland",	"nobles",	"Comyn",		2,	"B2", 	4,	false,	31)
+	block("Scotland",	"moray",	"Moray",		2,	"B2", 	3,	true,	32)
+	block("Scotland",	"nobles",	"Angus",		2,	"B2", 	3,	false,	33)
+	block("Scotland",	"nobles",	"Argyll",		2,	"B2", 	3,	false,	34)
+	block("Scotland",	"nobles",	"Bruce",		2,	"B2", 	4,	false,	35)
+	block("Scotland",	"nobles",	"Mar",			2,	"B2", 	3,	false,	36)
+	block("Scotland",	"nobles",	"Lennox",		2,	"B2", 	3,	false,	37)
 
-	block("Scotland",	"nobles",	"Buchan",		2,	"B2", 	3,	false,	41);
-	block("Scotland",	"nobles",	"Galloway",		2,	"B2", 	3,	false,	42);
-	block("Scotland",	"nobles",	"Ross",			2,	"B2", 	3,	false,	43);
-	block("Scotland",	"nobles",	"Atholl",		2,	"B2", 	3,	false,	44);
-	block("Scotland",	"nobles",	"Dunbar",		2,	"B2", 	3,	false,	45);
-	block("Scotland",	"nobles",	"Mentieth",		2,	"B2", 	3,	false,	46);
-	block("Scotland",	"nobles",	"Steward",		2,	"B2", 	3,	false,	47);
+	block("Scotland",	"nobles",	"Buchan",		2,	"B2", 	3,	false,	41)
+	block("Scotland",	"nobles",	"Galloway",		2,	"B2", 	3,	false,	42)
+	block("Scotland",	"nobles",	"Ross",			2,	"B2", 	3,	false,	43)
+	block("Scotland",	"nobles",	"Atholl",		2,	"B2", 	3,	false,	44)
+	block("Scotland",	"nobles",	"Dunbar",		2,	"B2", 	3,	false,	45)
+	block("Scotland",	"nobles",	"Mentieth",		2,	"B2", 	3,	false,	46)
+	block("Scotland",	"nobles",	"Steward",		2,	"B2", 	3,	false,	47)
 
-	block("England",	"king",		"Edward",		3,	"B4", 	4,	true,	61);
-	block("England",	"archers",	"Lancaster Archers",	2,	"B3", 	3,	false,	62);
-	block("England",	"archers",	"Wales Archers",	2,	"B3", 	3,	false,	63);
-	block("England",	"knights",	"Lancaster Knights",	2,	"B3", 	4,	false,	64);
-	block("England",	"knights",	"York Knights",		2,	"B3", 	4,	false,	65);
-	block("England",	"knights",	"Durham Knights",	2,	"B3", 	3,	false,	66);
-	block("England",	"hobelars",	"Hobelars",		3,	"A2", 	3,	true,	67);
+	block("England",	"king",		"Edward",		3,	"B4", 	4,	true,	61)
+	block("England",	"archers",	"Lancaster Archers",	2,	"B3", 	3,	false,	62)
+	block("England",	"archers",	"Wales Archers",	2,	"B3", 	3,	false,	63)
+	block("England",	"knights",	"Lancaster Knights",	2,	"B3", 	4,	false,	64)
+	block("England",	"knights",	"York Knights",		2,	"B3", 	4,	false,	65)
+	block("England",	"knights",	"Durham Knights",	2,	"B3", 	3,	false,	66)
+	block("England",	"hobelars",	"Hobelars",		3,	"A2", 	3,	true,	67)
 
-	block("England",	"infantry",	"York Infantry",	2,	"C2", 	4,	false,	71);
-	block("England",	"infantry",	"Lancaster Infantry",	2,	"C2", 	4,	false,	72);
-	block("England",	"infantry",	"Northumber Infantry",	2,	"C2", 	4,	false,	73);
-	block("England",	"infantry",	"Durham Infantry",	2,	"C2", 	3,	false,	74);
-	block("England",	"infantry",	"Cumbria Infantry",	2,	"C2", 	3,	false,	75);
-	block("England",	"infantry",	"Westmor Infantry",	2,	"C2", 	3,	false,	82);
-	block("England",	"infantry",	"Wales Infantry",	2,	"C3", 	3,	false,	76);
-	block("England",	"infantry",	"Ulster Infantry",	2,	"C3", 	3,	false,	77);
+	block("England",	"infantry",	"York Infantry",	2,	"C2", 	4,	false,	71)
+	block("England",	"infantry",	"Lancaster Infantry",	2,	"C2", 	4,	false,	72)
+	block("England",	"infantry",	"Northumber Infantry",	2,	"C2", 	4,	false,	73)
+	block("England",	"infantry",	"Durham Infantry",	2,	"C2", 	3,	false,	74)
+	block("England",	"infantry",	"Cumbria Infantry",	2,	"C2", 	3,	false,	75)
+	block("England",	"infantry",	"Westmor Infantry",	2,	"C2", 	3,	false,	82)
+	block("England",	"infantry",	"Wales Infantry",	2,	"C3", 	3,	false,	76)
+	block("England",	"infantry",	"Ulster Infantry",	2,	"C3", 	3,	false,	77)
 
-	block("England",	"nobles",	"Comyn",		2,	"B2", 	4,	false,	81);
-	block("England",	"nobles",	"Angus",		2,	"B2", 	3,	false,	83);
-	block("England",	"nobles",	"Argyll",		2,	"B2", 	3,	false,	84);
-	block("England",	"nobles",	"Bruce",		2,	"B2", 	4,	false,	85);
-	block("England",	"nobles",	"Mar",			2,	"B2", 	3,	false,	86);
-	block("England",	"nobles",	"Lennox",		2,	"B2", 	3,	false,	87);
+	block("England",	"nobles",	"Comyn",		2,	"B2", 	4,	false,	81)
+	block("England",	"nobles",	"Angus",		2,	"B2", 	3,	false,	83)
+	block("England",	"nobles",	"Argyll",		2,	"B2", 	3,	false,	84)
+	block("England",	"nobles",	"Bruce",		2,	"B2", 	4,	false,	85)
+	block("England",	"nobles",	"Mar",			2,	"B2", 	3,	false,	86)
+	block("England",	"nobles",	"Lennox",		2,	"B2", 	3,	false,	87)
 
-	block("England",	"nobles",	"Buchan",		2,	"B2", 	3,	false,	91);
-	block("England",	"nobles",	"Galloway",		2,	"B2", 	3,	false,	92);
-	block("England",	"nobles",	"Ross",			2,	"B2", 	3,	false,	93);
-	block("England",	"nobles",	"Atholl",		2,	"B2", 	3,	false,	94);
-	block("England",	"nobles",	"Dunbar",		2,	"B2", 	3,	false,	95);
-	block("England",	"nobles",	"Mentieth",		2,	"B2", 	3,	false,	96);
-	block("England",	"nobles",	"Steward",		2,	"B2", 	3,	false,	97);
-})();
+	block("England",	"nobles",	"Buchan",		2,	"B2", 	3,	false,	91)
+	block("England",	"nobles",	"Galloway",		2,	"B2", 	3,	false,	92)
+	block("England",	"nobles",	"Ross",			2,	"B2", 	3,	false,	93)
+	block("England",	"nobles",	"Atholl",		2,	"B2", 	3,	false,	94)
+	block("England",	"nobles",	"Dunbar",		2,	"B2", 	3,	false,	95)
+	block("England",	"nobles",	"Mentieth",		2,	"B2", 	3,	false,	96)
+	block("England",	"nobles",	"Steward",		2,	"B2", 	3,	false,	97)
+})()
 
 if (typeof module !== 'undefined')
-	module.exports = { CARDS, BLOCKS, AREAS, BORDERS }
+	module.exports = { CARDS, BLOCKS, AREAS, BORDERS, block_index, area_index }

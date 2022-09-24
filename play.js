@@ -1,10 +1,38 @@
 "use strict"
 
-const ENGLAND = "England"
-const SCOTLAND = "Scotland"
+function set_has(set, item) {
+	let a = 0
+	let b = set.length - 1
+	while (a <= b) {
+		let m = (a + b) >> 1
+		let x = set[m]
+		if (item < x)
+			b = m - 1
+		else if (item > x)
+			a = m + 1
+		else
+			return true
+	}
+	return false
+}
+
 const ENEMY = { Scotland: "England", England: "Scotland" }
-const ENGLAND_BAG = "E. Bag"
-const SCOTLAND_BAG = "S. Bag"
+
+const ENGLAND_BAG = area_index["E. Bag"]
+const SCOTLAND_BAG = area_index["S. Bag"]
+
+const AREA_ARGYLL = area_index["Argyll"]
+const AREA_CARRICK = area_index["Carrick"]
+const AREA_DUNBAR = area_index["Dunbar"]
+const AREA_FIFE = area_index["Fife"]
+const AREA_ENGLAND = area_index["England"]
+const AREA_GARMORAN = area_index["Garmoran"]
+const AREA_LANARK = area_index["Lanark"]
+const AREA_LENNOX = area_index["Lennox"]
+const AREA_LOTHIAN = area_index["Lothian"]
+const AREA_MENTIETH = area_index["Mentieth"]
+const AREA_SCOTLAND = area_index["Scotland"]
+const AREA_SELKIRK = area_index["Selkirk"]
 
 const NOBLES = [
 	"Angus", "Argyll", "Atholl", "Bruce", "Buchan", "Comyn", "Dunbar",
@@ -41,15 +69,21 @@ function toggle_blocks() {
 let ui = {
 	cards: {},
 	card_backs: {},
-	areas: {},
-	blocks: {},
-	battle_menu: {},
-	battle_block: {},
+	areas: [],
+	blocks: [],
+	battle_menu: [],
+	battle_block: [],
 	present: new Set(),
 }
 
 function on_log(text) {
 	let p = document.createElement("div")
+
+	if (text.match(/^>/)) {
+                text = text.substring(1)
+                p.className = "i"
+        }
+
 	text = text.replace(/&/g, "&amp;")
 	text = text.replace(/</g, "&lt;")
 	text = text.replace(/>/g, "&gt;")
@@ -58,30 +92,16 @@ function on_log(text) {
 
 	text = text.replace(/^([A-Z]):/, '<span class="$1"> $1 </span>')
 
-	if (text.match(/^Scenario: /))
-		p.className = 'st', text = text.substring(10)
-	else if (text.match(/^~ .* ~$/))
-		p.className = 'br', text = text.substring(2, text.length-2)
-	else if (text.match(/^Start England turn/))
-		p.className = 'E'
-	else if (text.match(/^Start Scotland turn/))
-		p.className = 'S'
-	else if (text.match(/^Start /))
-		p.className = 'st', text = text.replace(/\.$/, "")
-	else if (text.match(/^(Battle in|Defection battle in)/))
-		p.className = 'bs'
-	else if (text.match(/^.h1 /)) {
-		p.className = 'st', text = text.substring(4)
-	}
-	else if (text.match(/^.turn England/)) {
-		p.className = 'E', text = text.substring(6)
-	}
-	else if (text.match(/^.turn Scotland/)) {
-		p.className = 'S', text = text.substring(6)
-	}
-
-	if (text.match(/^Start /))
-		text = text.substring(6)
+	if (text.match(/^\.h1 /))
+		p.className = 'h1', text = text.substring(4)
+	if (text.match(/^\.h2 E/))
+		p.className = 'h2 E', text = text.substring(4)
+	if (text.match(/^\.h2 S/))
+		p.className = 'h2 S', text = text.substring(4)
+	if (text.match(/^\.h3 /))
+		p.className = 'h3', text = text.substring(4)
+	if (text.match(/^\.h4 /))
+		p.className = 'h4', text = text.substring(4)
 
 	p.innerHTML = text
 	return p
@@ -89,7 +109,7 @@ function on_log(text) {
 
 function on_focus_area(evt) {
 	let where = evt.target.area
-	document.getElementById("status").textContent = where
+	document.getElementById("status").textContent = AREAS[where].name
 }
 
 function on_blur_area(evt) {
@@ -127,7 +147,7 @@ function on_focus_map_block(evt) {
 		if (BLOCKS[b].mortal)
 			text += ' \u271d'
 	} else {
-		text = (BLOCKS[b].owner === ENGLAND) ? "English" : "Scottish"
+		text = (BLOCKS[b].owner === "England") ? "English" : "Scottish"
 	}
 	document.getElementById("status").textContent = text
 }
@@ -286,19 +306,19 @@ function build_map() {
 	for (let c = 1; c <= 5; ++c)
 		ui.card_backs[c] = document.getElementById("back+"+c)
 
-	for (let name in AREAS) {
-		let area = AREAS[name]
-		let element = svgmap.getElementById("area+"+name)
+	for (let s = 1; s < AREAS.length; ++s) {
+		let area = AREAS[s]
+		let element = svgmap.getElementById("area+"+area.name)
 		if (element) {
-			element.area = name
+			element.area = s
 			element.addEventListener("mouseenter", on_focus_area)
 			element.addEventListener("mouseleave", on_blur_area)
 			element.addEventListener("click", on_click_area)
-			ui.areas[name] = element
+			ui.areas[s] = element
 		}
 	}
 
-	for (let b in BLOCKS) {
+	for (let b = 0; b < BLOCKS.length; ++b) {
 		let block = BLOCKS[b]
 		build_battle_block(b, block)
 		build_map_block(b, block)
@@ -327,17 +347,17 @@ function layout_blocks(location, north, south) {
 	case SCOTLAND_BAG:
 		wrap = 28
 		break
-	case "Selkirk":
-	case "Lothian":
-	case "Dunbar":
-	case "Lanark":
-	case "Lennox":
-	case "Argyll":
-	case "Garmoran":
-	case "Mentieth":
+	case AREA_SELKIRK:
+	case AREA_LOTHIAN:
+	case AREA_DUNBAR:
+	case AREA_LANARK:
+	case AREA_LENNOX:
+	case AREA_ARGYLL:
+	case AREA_GARMORAN:
+	case AREA_MENTIETH:
 		wrap = 3
 		break
-	case "England":
+	case AREA_ENGLAND:
 		wrap = 5
 	}
 
@@ -389,31 +409,31 @@ function position_block(location, row, n_rows, col, n_cols, element) {
 		layout_major = 0
 		layout_minor = 0
 		break
-	case ENGLAND:
+	case AREA_ENGLAND:
 		layout_major = 1
 		layout_minor = 1
 		break
-	case "Argyll":
+	case AREA_ARGYLL:
 		layout_major = 0.5
 		layout_minor = 1.0
 		break
-	case "Carrick":
+	case AREA_CARRICK:
 		layout_major = 0.75
 		layout_minor = 0.5
 		break
-	case "Dunbar":
+	case AREA_DUNBAR:
 		layout_major = 0.25
 		layout_minor = 0.75
 		break
-	case "Fife":
+	case AREA_FIFE:
 		layout_major = 0.25
 		layout_minor = 0.5
 		break
-	case "Lennox":
+	case AREA_LENNOX:
 		layout_major = 0.75
 		layout_minor = 0.75
 		break
-	case "Mentieth":
+	case AREA_MENTIETH:
 		layout_major = 0.5
 		layout_minor = 0.25
 		break
@@ -445,13 +465,13 @@ function update_map() {
 
 	document.getElementById("turn").setAttribute("class", "turn year_" + view.year)
 
-	for (let area in AREAS)
+	for (let area = 1; area < AREAS.length; ++area)
 		layout[area] = { north: [], south: [] }
 
 	for (let b in view.location) {
-		if (view.location[b] === null && BLOCKS[b].mortal) {
+		if (view.location[b] === 0 && BLOCKS[b].mortal) {
 			let element = ui.blocks[b]
-			if (BLOCKS[b].owner === SCOTLAND)
+			if (BLOCKS[b].owner === "Scotland")
 				layout[SCOTLAND_BAG].north.push(element)
 			else
 				layout[ENGLAND_BAG].south.push(element)
@@ -462,13 +482,13 @@ function update_map() {
 		let info = BLOCKS[b]
 		let element = ui.blocks[b]
 		let area = view.location[b]
-		if (area in AREAS || BLOCKS[b].mortal) {
-			let moved = view.moved[b] ? " moved" : ""
-			if (is_known_block(b) || area === null) {
+		if (area > 0 || BLOCKS[b].mortal) {
+			let moved = set_has(view.moved, b) ? " moved" : ""
+			if (is_known_block(b) || area === 0) {
 				let image = " block_" + info.image
 				let steps = " r" + (info.steps - view.steps[b])
 				let known = " known"
-				if (area === null) {
+				if (area === 0) {
 					moved = " moved"
 					steps = " r0"
 				}
@@ -476,8 +496,8 @@ function update_map() {
 			} else {
 				element.classList = info.owner + " block" + moved
 			}
-			if (area !== null) {
-				if (info.owner === SCOTLAND)
+			if (area > 0) {
+				if (info.owner === "Scotland")
 					layout[area].north.push(element)
 				else
 					layout[area].south.push(element)
@@ -488,15 +508,15 @@ function update_map() {
 		}
 	}
 
-	for (let area in AREAS)
+	for (let area = 1; area < AREAS.length; ++area)
 		layout_blocks(area, layout[area].north, layout[area].south)
 
 	// Mark selections and highlights
 
-	for (let where in AREAS) {
-		if (ui.areas[where]) {
-			ui.areas[where].classList.remove('highlight')
-			ui.areas[where].classList.remove('where')
+	for (let area = 1; area < AREAS.length; ++area) {
+		if (ui.areas[area]) {
+			ui.areas[area].classList.remove('highlight')
+			ui.areas[area].classList.remove('where')
 		}
 	}
 	if (view.actions && view.actions.area)
@@ -505,7 +525,7 @@ function update_map() {
 	if (view.where)
 		ui.areas[view.where].classList.add('where')
 
-	for (let b in BLOCKS) {
+	for (let b = 0; b < BLOCKS.length; ++b) {
 		ui.blocks[b].classList.remove('highlight')
 		ui.blocks[b].classList.remove('selected')
 	}
@@ -513,7 +533,7 @@ function update_map() {
 		if (view.actions && view.actions.block)
 			for (let b of view.actions.block)
 				ui.blocks[b].classList.add('highlight')
-		if (view.who)
+		if (view.who >= 0)
 			ui.blocks[view.who].classList.add('selected')
 	}
 }
@@ -608,7 +628,7 @@ function update_battle() {
 				ui.battle_block[block].classList.add("secret")
 			else
 				ui.battle_block[block].classList.remove("secret")
-			if (view.moved[block])
+			if (set_has(view.moved, block))
 				ui.battle_block[block].classList.add("moved")
 			else
 				ui.battle_block[block].classList.remove("moved")
@@ -618,7 +638,7 @@ function update_battle() {
 				ui.battle_block[block].classList.add("known")
 		}
 
-		for (let b in BLOCKS) {
+		for (let b = 0; b < BLOCKS.length; ++b) {
 			if (!ui.present.has(b)) {
 				if (cell.contains(ui.battle_menu[b]))
 					cell.removeChild(ui.battle_menu[b])
@@ -626,7 +646,7 @@ function update_battle() {
 		}
 	}
 
-	if (player === ENGLAND) {
+	if (player === "England") {
 		fill_cell("FR", view.battle.ER, true)
 		fill_cell("FF", view.battle.EF, false)
 		fill_cell("EF", view.battle.SF, false)
