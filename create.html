@@ -8,6 +8,18 @@
 </dl>
 
 <p>
-<label><input type="checkbox" name="autohit" value="true">
-Automatically apply combat hits when possible.
+<label><input type="checkbox" id="delay_hits" name="delay_hits" value="true">
+Fire with all blocks before assigning hits.
 </label>
+
+<br>
+<label><input type="checkbox" id="autohit" name="autohit" value="true">
+Automatically assign hits when possible.
+</label>
+
+<script>
+let cb1 = document.getElementById("autohit")
+let cb2 = document.getElementById("delay_hits")
+cb1.onchange = function () { if (cb1.checked) cb2.checked = false }
+cb2.onchange = function () { if (cb2.checked) cb1.checked = false }
+</script>

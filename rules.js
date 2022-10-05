@@ -1596,6 +1596,12 @@ function end_move() {
 
 // BATTLE PHASE
 
+function bring_on_reserves() {
+	for (let b = 0; b < block_count; ++b)
+		if (game.location[b] === game.where)
+			set_delete(game.reserves, b)
+}
+
 function goto_battle_phase() {
 	if (have_contested_areas()) {
 		game.active = game.p1
@@ -1619,6 +1625,11 @@ states.battle_phase = {
 	},
 }
 
+function print_retreat_summary() {
+	if (game.turn_log && game.turn_log.length > 0)
+		print_turn_log_no_active("Retreated from " + area_tag(game.where) + ":")
+}
+
 function start_battle(where, reason) {
 	game.battle_active = game.active
 	game.battle_reason = reason
@@ -1631,20 +1642,10 @@ function start_battle(where, reason) {
 	game.where = where
 	game.battle_round = 0
 	game.state = 'battle_round'
-	start_battle_round()
-}
-
-function resume_battle() {
-	if (game.victory)
-		return goto_game_over()
-	game.state = 'battle_round'
-	pump_battle_round()
+	next_battle_round()
 }
 
 function end_battle() {
-	if (game.turn_log && game.turn_log.length > 0)
-		print_turn_log_no_active("Retreated from " + area_tag(game.where) + ":")
-
 	game.flash = ""
 	game.battle_round = 0
 	reset_border_limits()
@@ -1661,143 +1662,112 @@ function end_battle() {
 	goto_retreat()
 }
 
-function bring_on_reserves() {
-	for (let b = 0; b < block_count; ++b)
-		if (game.location[b] === game.where)
-			set_delete(game.reserves, b)
-}
-
-function start_battle_round() {
-	if (++game.battle_round <= 3) {
-		if (game.turn_log && game.turn_log.length > 0)
-			print_turn_log_no_active("Retreated from " + area_tag(game.where) + ":")
-		game.turn_log = []
-
-		log(".h4 Battle Round " + game.battle_round)
-
-		reset_border_limits()
-		game.moved = []
-
-		if (game.battle_round === 1) {
-			for (let b of CELTIC_BLOCKS)
-				if (game.location[b] === game.where && !is_battle_reserve(b))
-					celtic_unity_roll(b)
-		}
-		if (game.battle_round === 2) {
-			if (count_defenders() === 0) {
-				log("Defending main force was eliminated.")
-				log("Battlefield control changed.")
-				game.attacker[game.where] = ENEMY[game.attacker[game.where]]
-			} else if (count_attackers() === 0) {
-				log("Attacking main force was eliminated.")
-			}
-			for (let b of CELTIC_BLOCKS)
-				if (game.location[b] === game.where && is_battle_reserve(b))
-					celtic_unity_roll(b)
-			bring_on_reserves()
-		}
-		if (game.battle_round === 3) {
-			bring_on_reserves()
-		}
-
-		pump_battle_round()
-	} else {
-		end_battle()
+function next_battle_round() {
+	print_retreat_summary()
+	switch (game.battle_round) {
+	case 0: return goto_battle_round(1)
+	case 1: return goto_battle_round(2)
+	case 2: return goto_battle_round(3)
+	case 3: return end_battle()
 	}
 }
 
-function pump_battle_round() {
-	function filter_battle_blocks(ci, is_candidate) {
-		let output = null
-		for (let b = 0; b < block_count; ++b) {
-			if (is_candidate(b) && !set_has(game.moved, b)) {
-				if (block_initiative(b) === ci) {
-					if (!output)
-						output = []
-					output.push(b)
-				}
-			}
+function goto_battle_round(new_battle_round) {
+	game.battle_round = new_battle_round
+	game.turn_log = []
+
+	log(".h4 Battle Round " + game.battle_round)
+
+	reset_border_limits()
+	game.moved = []
+
+	if (game.battle_round === 1) {
+		for (let b of CELTIC_BLOCKS)
+			if (game.location[b] === game.where && !is_battle_reserve(b))
+				celtic_unity_roll(b)
+	}
+
+	if (game.battle_round === 2) {
+		if (count_defenders() === 0) {
+			log("Defending main force was eliminated.")
+			log("Battlefield control changed.")
+			game.attacker[game.where] = ENEMY[game.attacker[game.where]]
+		} else if (count_attackers() === 0) {
+			log("Attacking main force was eliminated.")
 		}
-		return output
+		for (let b of CELTIC_BLOCKS)
+			if (game.location[b] === game.where && is_battle_reserve(b))
+				celtic_unity_roll(b)
+		bring_on_reserves()
 	}
 
-	function battle_step(active, initiative, candidate) {
-		game.battle_list = filter_battle_blocks(initiative, candidate)
-		if (game.battle_list) {
-			game.active = active
-			return true
-		}
-		return false
+	if (game.battle_round === 3) {
+		bring_on_reserves()
 	}
 
-	if (is_friendly_area(game.where) || is_enemy_area(game.where)) {
-		end_battle()
-	} else if (count_attackers() === 0 || count_defenders() === 0) {
-		start_battle_round()
-	} else {
-		let attacker = game.attacker[game.where]
-		let defender = ENEMY[attacker]
-
-		if (battle_step(defender, 'A', is_defender)) return
-		if (battle_step(attacker, 'A', is_attacker)) return
-		if (battle_step(defender, 'B', is_defender)) return
-		if (battle_step(attacker, 'B', is_attacker)) return
-		if (battle_step(defender, 'C', is_defender)) return
-		if (battle_step(attacker, 'C', is_attacker)) return
-
-		start_battle_round()
-	}
-}
-
-function pass_with_block(b) {
-	game.flash = block_name(b) + " passed."
-	log_battle(block_name(b) + " passed.")
-	set_add(game.moved, b)
 	resume_battle()
 }
 
-function retreat_with_block(b) {
-	game.who = b
-	game.state = 'retreat_in_battle'
+function resume_battle() {
+	if (game.victory)
+		return goto_game_over()
+
+	if (is_friendly_area(game.where) || is_enemy_area(game.where))
+		return end_battle()
+
+	if (count_attackers() === 0 || count_defenders() === 0)
+		return next_battle_round()
+
+	game.state = 'battle_round'
+	pump_battle_step()
 }
 
-function fire_with_block(b) {
-	set_add(game.moved, b)
-	let steps = game.steps[b]
-	let fire = block_fire_power(b, game.where)
-	let printed_fire = block_printed_fire_power(b)
-	let name = block_name(b) + " " + BLOCKS[b].combat
-	if (fire > printed_fire)
-		name += "+" + (fire - printed_fire)
-
-	let rolls = []
-	game.hits = 0
-	for (let i = 0; i < steps; ++i) {
-		let die = roll_d6()
-		if (die <= fire) {
-			rolls.push(DIE_HIT[die])
-			++game.hits
-		} else {
-			rolls.push(DIE_MISS[die])
+function filter_battle_blocks(ci, is_candidate) {
+	let output = null
+	for (let b = 0; b < block_count; ++b) {
+		if (is_candidate(b) && !set_has(game.moved, b)) {
+			if (block_initiative(b) === ci) {
+				if (!output)
+					output = []
+				output.push(b)
+			}
 		}
 	}
+	return output
+}
 
-	game.flash = name + " fired " + rolls.join(" ") + " "
-	if (game.hits === 0)
-		game.flash += "and missed."
-	else if (game.hits === 1)
-		game.flash += "and scored 1 hit."
-	else
-		game.flash += "and scored " + game.hits + " hits."
-
-	log_battle(name + " fired " + rolls.join("") + ".")
-
-	if (game.hits > 0) {
-		game.active = ENEMY[game.active]
-		goto_battle_hits()
-	} else {
-		resume_battle()
+function battle_step(active, initiative, candidate) {
+	game.battle_list = filter_battle_blocks(initiative, candidate)
+	if (game.battle_list) {
+		if (game.active !== active) {
+			game.active = active
+			if (game.delay_hits && game.hits > 0) {
+				goto_battle_hits()
+				return true
+			}
+		}
+		return true
 	}
+	return false
+}
+
+function pump_battle_step() {
+	let attacker = game.attacker[game.where]
+	let defender = ENEMY[attacker]
+
+	if (battle_step(defender, 'A', is_defender)) return
+	if (battle_step(attacker, 'A', is_attacker)) return
+	if (battle_step(defender, 'B', is_defender)) return
+	if (battle_step(attacker, 'B', is_attacker)) return
+	if (battle_step(defender, 'C', is_defender)) return
+	if (battle_step(attacker, 'C', is_attacker)) return
+
+	if (game.delay_hits && game.hits > 0) {
+		game.active = ENEMY[game.active]
+		return goto_battle_hits()
+	}
+
+	next_battle_round()
 }
 
 states.battle_round = {
@@ -1813,6 +1783,16 @@ states.battle_round = {
 			if (can_block_retreat(b))
 				gen_action_battle(view, 'battle_retreat', b)
 		}
+		if (game.delay_hits && game.hits > 0)
+			gen_action(view, 'assign')
+	},
+	assign: function () {
+		game.active = ENEMY[game.active]
+		if (game.hits === 1)
+			game.flash = `Inflicted 1 hit.`
+		else
+			game.flash = `Inflicted ${game.hits} hits.`
+		goto_battle_hits()
 	},
 	block: function (who) {
 		fire_with_block(who)
@@ -1825,6 +1805,72 @@ states.battle_round = {
 	},
 	battle_pass: function (who) {
 		pass_with_block(who)
+	}
+}
+
+function retreat_with_block(b) {
+	game.who = b
+	game.state = 'retreat_in_battle'
+}
+
+function pass_with_block(b) {
+	game.flash = block_name(b) + " passed."
+	log_battle(block_name(b) + " passed.")
+	set_add(game.moved, b)
+	resume_battle()
+}
+
+function fire_with_block(b) {
+	set_add(game.moved, b)
+	let steps = game.steps[b]
+	let fire = block_fire_power(b, game.where)
+	let printed_fire = block_printed_fire_power(b)
+	let name = block_name(b) + " " + BLOCKS[b].combat
+	if (fire > printed_fire)
+		name += "+" + (fire - printed_fire)
+
+	let rolls = []
+	let hits = 0
+	for (let i = 0; i < steps; ++i) {
+		let die = roll_d6()
+		if (die <= fire) {
+			rolls.push(DIE_HIT[die])
+			++hits
+		} else {
+			rolls.push(DIE_MISS[die])
+		}
+	}
+	game.hits += hits
+
+	log_battle(name + " fired " + rolls.join("") + ".")
+
+	if (game.delay_hits) {
+		game.flash = name + " fired " + rolls.join(" ")
+		if (game.hits === 0)
+			game.flash += "."
+		else if (game.hits === 1)
+			game.flash += " for a total of 1 hit."
+		else if (game.hits > 1)
+			game.flash += " for a total of " + game.hits + " hits."
+	} else {
+		game.flash = name + " fired " + rolls.join(" ")
+		if (hits === 0)
+			game.flash += " and missed."
+		else if (hits === 1)
+			game.flash += " and scored 1 hit."
+		else
+			game.flash += " and scored " + hits + " hits."
+	}
+
+	if (hits > 0) {
+		if (!game.delay_hits) {
+			game.active = ENEMY[game.active]
+			goto_battle_hits()
+		} else {
+			resume_battle()
+		}
+	} else {
+		resume_battle()
 	}
 }
 
@@ -1848,10 +1894,12 @@ function goto_battle_hits() {
 			game.flash += ` Assigned ${n}.`
 	}
 
-	if (game.battle_list.length === 0)
+	if (game.battle_list.length === 0) {
+		game.hits = 0
 		resume_battle()
-	else
+	} else {
 		game.state = 'battle_hits'
+	}
 }
 
 function apply_hit(who) {
@@ -1865,10 +1913,12 @@ function apply_hit(who) {
 		resume_battle()
 	else {
 		game.battle_list = list_victims(game.active)
-		if (game.battle_list.length === 0)
+		if (game.battle_list.length === 0) {
+			game.hits = 0
 			resume_battle()
-		else
+		} else {
 			game.flash += " " + game.hits + (game.hits === 1 ? " hit left." : " hits left.")
+		}
 	}
 }
 
@@ -1936,6 +1986,8 @@ states.retreat = {
 		for (let b = 0; b < block_count; ++b)
 			if (game.location[b] === game.where && block_owner(b) === game.active)
 				eliminate_block(b, 'retreat')
+		if (game.victory)
+			return goto_game_over()
 		print_turn_log("retreated")
 		goto_regroup()
 	},
@@ -1988,6 +2040,8 @@ states.retreat_to = {
 	},
 	eliminate: function () {
 		eliminate_block(game.who, 'retreat')
+		if (game.victory)
+			return goto_game_over()
 		game.who = NOBODY
 		game.state = 'retreat'
 	},
@@ -2974,6 +3028,7 @@ exports.setup = function (seed, scenario, options) {
 		log: [],
 		undo: [],
 		moves: 0,
+		hits: 0,
 
 		location: [],
 		steps: [],
@@ -3004,6 +3059,8 @@ exports.setup = function (seed, scenario, options) {
 
 	if (options.autohit)
 		game.autohit = 1
+	if (options.delay_hits)
+		game.delay_hits = 1
 
 	log(".h1 " + scenario)
 	start_year()

@@ -693,6 +693,7 @@ function on_update() {
 	action_button("end_disbanding", "End disbanding")
 	action_button("end_builds", "End builds")
 	action_button("end_pillage", "End pillage")
+	action_button("assign", "Assign hits")
 	action_button("pass", "Pass")
 	action_button("undo", "Undo")
 
