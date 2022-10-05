@@ -15,6 +15,7 @@ header.your_turn { background-color: orange; }
 #log .E { background-color: pink; }
 #log .h3 { background-color: gainsboro; }
 #log .h4 { font-style: italic; text-decoration: underline; }
+#log .tip:hover { text-decoration: underline; cursor: pointer; }
 
 /* CARDS */
 
@@ -115,18 +116,22 @@ header.your_turn { background-color: orange; }
 }
 
 #map svg path.area {
-	opacity: 0;
-	fill-opacity: 0.4;
+	fill-opacity: 0;
 	fill: white;
 }
 #map svg path.area.where {
-	opacity: 1;
+	fill-opacity: 0.4;
 	fill: darkslategray;
 }
 #map svg path.area.highlight {
 	cursor: pointer;
-	opacity: 1;
+	fill-opacity: 0.4;
 	fill: white;
+}
+#map svg path.area.tip {
+	stroke: yellow;
+	stroke-width: 40;
+	stroke-dasharray: 80 40;
 }
 
 #map.hide_blocks #blocks {

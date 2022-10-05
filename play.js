@@ -76,6 +76,24 @@ let ui = {
 	present: new Set(),
 }
 
+function on_focus_area_tip(x) {
+	ui.areas[x].classList.add("tip")
+}
+
+function on_blur_area_tip(x) {
+	ui.areas[x].classList.remove("tip")
+}
+
+function on_click_area_tip(x) {
+	ui.areas[x].scrollIntoView({ block:"center", inline:"center", behavior:"smooth" })
+}
+
+function sub_area_name(match, p1, offset, string) {
+	let x = p1 | 0
+	let n = AREAS[x].name
+	return `<span class="tip" onmouseenter="on_focus_area_tip(${x})" onmouseleave="on_blur_area_tip(${x})" onclick="on_click_area_tip(${x})">${n}</span>`
+}
+
 function on_log(text) {
 	let p = document.createElement("div")
 
@@ -91,6 +109,8 @@ function on_log(text) {
 	text = text.replace(/\u2192 /g, "\u2192\xa0")
 
 	text = text.replace(/^([A-Z]):/, '<span class="$1"> $1 </span>')
+
+	text = text.replace(/#(\d+)/g, sub_area_name)
 
 	if (text.match(/^\.h1 /))
 		p.className = 'h1', text = text.substring(4)
