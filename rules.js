@@ -280,7 +280,26 @@ function block_fire_power(who, where) {
 		else if (who === B_MORAY && where === AREA_MORAY)
 			++combat
 	}
+	if (game.schiltroms) {
+		if (is_scottish_infantry(who) && english_have_no_archers_in_battle(where))
+			++combat
+	}
 	return combat
+}
+
+function is_scottish_infantry(who) {
+	return block_owner(who) === SCOTLAND && block_type(who) === 'infantry'
+}
+
+function is_english_archers(who) {
+	return block_owner(who) === ENGLAND && block_type(who) === 'archers'
+}
+
+function english_have_no_archers_in_battle(where) {
+	for (let b = 0; b < block_count; ++b)
+		if (game.location[b] === where && is_english_archers(b) && !is_battle_reserve(b))
+			return false
+	return true
 }
 
 function is_coastal_area(where) {
@@ -3048,6 +3067,8 @@ exports.setup = function (seed, scenario, options) {
 	if (options.rng)
 		game.rng = options.rng
 
+	log(".h1 " + scenario)
+
 	if (scenario === "The Bruce")
 		setup_the_bruce()
 	else if (scenario === "Braveheart")
@@ -3062,7 +3083,14 @@ exports.setup = function (seed, scenario, options) {
 	if (options.delay_hits)
 		game.delay_hits = 1
 
-	log(".h1 " + scenario)
+	if (options.schiltroms) {
+		log("")
+		log("Schiltroms:")
+		logi("Scottish infantry fire at +1 in battles where the English have no archers.")
+		log("")
+		game.schiltroms = 1
+	}
+
 	start_year()
 	return game
 }
