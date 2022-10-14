@@ -1665,6 +1665,8 @@ function start_battle(where, reason) {
 }
 
 function end_battle() {
+	print_retreat_summary()
+
 	game.flash = ""
 	game.battle_round = 0
 	reset_border_limits()
