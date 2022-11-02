@@ -488,7 +488,7 @@ function update_map() {
 	for (let area = 1; area < AREAS.length; ++area)
 		layout[area] = { north: [], south: [] }
 
-	for (let b in view.location) {
+	for (let b = 0; b < BLOCKS.length; ++b) {
 		if (view.location[b] === 0 && BLOCKS[b].mortal) {
 			let element = ui.blocks[b]
 			if (BLOCKS[b].owner === "Scotland")
@@ -498,12 +498,12 @@ function update_map() {
 		}
 	}
 
-	for (let b in view.location) {
+	for (let b = 0; b < BLOCKS.length; ++b) {
 		let info = BLOCKS[b]
 		let element = ui.blocks[b]
 		let area = view.location[b]
 		if (area > 0 || BLOCKS[b].mortal) {
-			let moved = set_has(view.moved, b) ? " moved" : ""
+			let moved = (set_has(view.moved, b) && view.who !== b) ? " moved" : ""
 			if (is_known_block(b) || area === 0) {
 				let image = " block_" + info.image
 				let steps = " r" + (info.steps - view.steps[b])

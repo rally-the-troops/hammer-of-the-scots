@@ -1576,6 +1576,7 @@ states.move_where = {
 			game.who = NOBODY
 			game.state = 'move_who'
 		} else {
+			set_add(game.moved, game.who)
 			if (game.distance === 0)
 				game.move_buf = [ area_tag(from) ]
 			let mark = move_block(game.who, from, to)
@@ -1602,7 +1603,6 @@ function end_move() {
 			game.activated.push(game.origin)
 			game.moves --
 		}
-		set_add(game.moved, game.who)
 		game.turn_log.push(game.move_buf)
 	}
 	delete game.move_buf
