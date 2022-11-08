@@ -7,25 +7,44 @@
 <dd>Start as per Braveheart but is played until one player achieves victory.
 </dl>
 
-<p>
-<label><input type="checkbox" id="schiltroms" name="schiltroms" value="true">
-Schiltroms:
+<dl>
+<dt>
+<label>
+<input type="checkbox" id="schiltroms" name="schiltroms" value="true">
+Schiltroms
+<dd>
 Scottish infantry fire at +1 when the English have no archers.
 </label>
+</dl>
 
-<p>
-<label><input type="checkbox" id="delay_hits" name="delay_hits" value="true">
-Delay hit assignment until all blocks with the same initiative have fired.
+<dl>
+<dt>
+<label>
+<input type="checkbox" id="delay_hits" name="delay_hits" value="true">
+Delay hit assignment
 </label>
+<dd>Let all blocks with the same initiative fire before assigning hits.
+<dd>This option is recommended for games that are not played live.
 
-<br>
-<label><input type="checkbox" id="autohit" name="autohit" value="true">
+<dt>
+<label>
+<input type="checkbox" id="autohit" name="autohit" value="true">
 Automatically assign hits when possible.
 </label>
+<dd>
+<i class="warning" id="warning"></i>
+</dl>
 
 <script>
 let cb1 = document.getElementById("autohit")
 let cb2 = document.getElementById("delay_hits")
-cb1.onchange = function () { if (cb1.checked) cb2.checked = false }
-cb2.onchange = function () { if (cb2.checked) cb1.checked = false }
+let msg = document.getElementById("warning")
+function warn_opts() {
+	if (cb1.checked)
+		msg.textContent = "Tip: Delay hit assignment is a better option for async play."
+	else
+		msg.textContent = ""
+}
+cb1.onchange = function () { if (cb1.checked) cb2.checked = false; warn_opts() }
+cb2.onchange = function () { if (cb2.checked) cb1.checked = false; warn_opts() }
 </script>
