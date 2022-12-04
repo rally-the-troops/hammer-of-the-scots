@@ -482,6 +482,8 @@ function can_block_move_to(who, from, to) {
 }
 
 function can_block_move(who) {
+	if (!is_on_map(who))
+		return false
 	if (who === B_NORSE)
 		return false
 	if (block_owner(who) === game.active && !set_has(game.moved, who)) {
@@ -1666,6 +1668,8 @@ function start_battle(where, reason) {
 
 function end_battle() {
 	print_retreat_summary()
+
+	bring_on_reserves()
 
 	game.flash = ""
 	game.battle_round = 0
