@@ -1845,6 +1845,21 @@ function pass_with_block(b) {
 	resume_battle()
 }
 
+function count_enemy_hp_in_battle() {
+	let is_candidate = (game.active === game.attacker[game.where]) ? is_defender : is_attacker
+	let n = 0
+	for (let b = 0; b < block_count; ++b)
+		if (is_candidate(b))
+			n += game.steps[b]
+	return n
+}
+
+function must_apply_hits() {
+	if (game.delay_hits)
+		return game.hits >= count_enemy_hp_in_battle()
+	return game.hits > 0
+}
+
 function fire_with_block(b) {
 	set_add(game.moved, b)
 	let steps = game.steps[b]
@@ -1887,13 +1902,9 @@ function fire_with_block(b) {
 			game.flash += " and scored " + hits + " hits."
 	}
 
-	if (hits > 0) {
-		if (!game.delay_hits) {
-			game.active = ENEMY[game.active]
-			goto_battle_hits()
-		} else {
-			resume_battle()
-		}
+	if (must_apply_hits()) {
+		game.active = ENEMY[game.active]
+		goto_battle_hits()
 	} else {
 		resume_battle()
 	}
