@@ -1218,12 +1218,11 @@ states.victuals = {
 				}
 			}
 		}
-		if (done) {
+		if (done)
 			view.prompt = "Victuals: Distribute three steps among friendly blocks in one group \u2014 done."
-			gen_action(view, 'end_builds')
-		} else {
+		else
 			view.prompt = "Victuals: Distribute three steps among friendly blocks in one group."
-		}
+		gen_action(view, 'end_builds')
 	},
 	block: function (who) {
 		push_undo()
