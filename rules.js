@@ -637,10 +637,12 @@ function eliminate_block(who, reason) {
 			disband(who)
 		}
 	} else if (who === B_KING) {
-		game.location[who] = NOWHERE
 		if (reason === 'combat' || reason === 'retreat') {
+			game.location[who] = NOWHERE
 			game.victory = "England won because the Scottish king has died in battle!"
 			game.result = ENGLAND
+		} else {
+			disband(who)
 		}
 	} else if (block_is_mortal(who) && (reason === 'combat' || reason === 'retreat')) {
 		game.location[who] = NOWHERE
