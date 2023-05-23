@@ -920,7 +920,6 @@ states.play_card = {
 		if (current === ENGLAND) {
 			if (game.e_card) {
 				view.prompt = "Waiting for Scotland to play a card."
-				gen_action(view, 'undo')
 			} else {
 				view.prompt = "Play a card."
 				for (let c of game.e_hand)
@@ -930,7 +929,6 @@ states.play_card = {
 		if (current === SCOTLAND) {
 			if (game.s_card) {
 				view.prompt = "Waiting for England to play a card."
-				gen_action(view, 'undo')
 			} else {
 				view.prompt = "Play a card."
 				for (let c of game.s_hand)
