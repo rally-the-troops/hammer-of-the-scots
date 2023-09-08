@@ -557,6 +557,12 @@ function can_block_regroup_to(who, to) {
 
 function can_block_regroup(who) {
 	if (block_owner(who) === game.active) {
+		if (who === B_NORSE) {
+			for (let to = first_map_area; to < area_count; ++to)
+				if (to !== game.where && to !== AREA_ENGLAND && is_friendly_coastal_area(to))
+					return true
+			return false
+		}
 		let from = game.location[who]
 		for (let to of AREAS[from].exits)
 			if (can_block_regroup_to(who, to))
