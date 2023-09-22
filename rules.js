@@ -634,10 +634,8 @@ function eliminate_block(who, reason) {
 				disband(who)
 			} else {
 				game.location[who] = NOWHERE
-				if (reason === 'combat') {
-					game.victory = "Scotland won because king Edward II has died in battle!"
-					game.result = SCOTLAND
-				}
+				game.victory = "Scotland won because king Edward II has died in battle!"
+				game.result = SCOTLAND
 			}
 		} else {
 			disband(who)
