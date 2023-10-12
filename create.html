@@ -17,25 +17,13 @@ Scottish infantry fire at +1 when the English have no archers.
 </label>
 </dl>
 
+<!--
 <dl>
 <dt>
 <label>
-<input type="checkbox" id="delay_hits" name="delay_hits" value="true">
-Delayed hit assignment
+<input type="checkbox" id="immediate" name="immediate" value="true">
+Assign hits immediately
 </label>
-<dd>Fire all blocks with the same initiative before assigning hits.
-
-<dt>
-<label>
-<input type="checkbox" id="autohit" name="autohit" value="true">
-Automatic hit assignment
-</label>
-<dd>Assign hits automatically when there is no choice.
+<dd><i>Note: This will slow down async play significantly!
 </dl>
-
-<script>
-let cb1 = document.getElementById("autohit")
-let cb2 = document.getElementById("delay_hits")
-cb1.onchange = function () { if (cb1.checked) cb2.checked = false }
-cb2.onchange = function () { if (cb2.checked) cb1.checked = false }
-</script>
+-->

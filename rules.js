@@ -1769,7 +1769,7 @@ function battle_step(active, initiative, candidate) {
 	if (game.battle_list) {
 		if (game.active !== active) {
 			game.active = active
-			if (game.delay_hits && game.hits > 0) {
+			if (game.hits > 0) {
 				goto_battle_hits()
 				return true
 			}
@@ -1790,7 +1790,7 @@ function pump_battle_step() {
 	if (battle_step(defender, 'C', is_defender)) return
 	if (battle_step(attacker, 'C', is_attacker)) return
 
-	if (game.delay_hits && game.hits > 0) {
+	if (game.hits > 0) {
 		game.active = ENEMY[game.active]
 		return goto_battle_hits()
 	}
@@ -1811,7 +1811,7 @@ states.battle_round = {
 			if (can_block_retreat(b))
 				gen_action_battle(view, 'battle_retreat', b)
 		}
-		if (game.delay_hits && game.hits > 0)
+		if (game.hits > 0)
 			gen_action(view, 'assign')
 	},
 	assign: function () {
@@ -1858,9 +1858,9 @@ function count_enemy_hp_in_battle() {
 }
 
 function must_apply_hits() {
-	if (game.delay_hits)
-		return game.hits >= count_enemy_hp_in_battle()
-	return game.hits > 0
+	if (game.immediate)
+		return game.hits > 0
+	return game.hits >= count_enemy_hp_in_battle()
 }
 
 function fire_with_block(b) {
@@ -1887,15 +1887,7 @@ function fire_with_block(b) {
 
 	log_battle(name + " fired " + rolls.join("") + ".")
 
-	if (game.delay_hits) {
-		game.flash = name + " fired " + rolls.join(" ")
-		if (game.hits === 0)
-			game.flash += "."
-		else if (game.hits === 1)
-			game.flash += " for a total of 1 hit."
-		else if (game.hits > 1)
-			game.flash += " for a total of " + game.hits + " hits."
-	} else {
+	if (game.immediate) {
 		game.flash = name + " fired " + rolls.join(" ")
 		if (hits === 0)
 			game.flash += " and missed."
@@ -1903,6 +1895,14 @@ function fire_with_block(b) {
 			game.flash += " and scored 1 hit."
 		else
 			game.flash += " and scored " + hits + " hits."
+	} else {
+		game.flash = name + " fired " + rolls.join(" ")
+		if (game.hits === 0)
+			game.flash += "."
+		else if (game.hits === 1)
+			game.flash += " for a total of 1 hit."
+		else if (game.hits > 1)
+			game.flash += " for a total of " + game.hits + " hits."
 	}
 
 	if (must_apply_hits()) {
@@ -3100,8 +3100,9 @@ exports.setup = function (seed, scenario, options) {
 
 	if (options.autohit)
 		game.autohit = 1
-	if (options.delay_hits)
-		game.delay_hits = 1
+
+	if (options.immediate)
+		game.immediate = 1
 
 	if (options.schiltroms) {
 		log("")
