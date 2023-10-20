@@ -1,68 +1,57 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1">
+<meta name="viewport" content="width=device-width, height=device-height, user-scalable=no, interactive-widget=resizes-content, viewport-fit=cover">
+<meta name="theme-color" content="#444">
 <meta charset="UTF-8">
 <title>HAMMER OF THE SCOTS</title>
 <link rel="icon" href="Scottish_Thistle_(Heraldry).svg">
 <link rel="stylesheet" href="/fonts/fonts.css">
-<link rel="stylesheet" href="/common/play.css">
+<link rel="stylesheet" href="/common/client.css">
 <link rel="stylesheet" href="/common/columbia.css">
 <link rel="stylesheet" href="play.css">
-<script defer src="/common/play.js"></script>
+<script defer src="/common/client.js"></script>
 <script defer src="data.js"></script>
 <script defer src="play.js"></script>
 </head>
 <body class="oldblocks">
 
-<div id="battle">
-<div id="battle_header"></div>
-<div id="ER"></div>
-<div id="EF"></div>
-<div id="FF"></div>
-<div id="FR"></div>
-<div id="battle_message"></div>
-</div>
-
-<div id="herald">
-<div id="herald_header">Name an enemy noble:</div>
-<div id="herald+Angus" class="herald_noble" onclick="on_herald('Angus')">Angus</div>
-<div id="herald+Argyll" class="herald_noble" onclick="on_herald('Argyll')">Argyll</div>
-<div id="herald+Atholl" class="herald_noble" onclick="on_herald('Atholl')">Atholl</div>
-<div id="herald+Bruce" class="herald_noble" onclick="on_herald('Bruce')">Bruce</div>
-<div id="herald+Buchan" class="herald_noble" onclick="on_herald('Buchan')">Buchan</div>
-<div id="herald+Comyn" class="herald_noble" onclick="on_herald('Comyn')">Comyn</div>
-<div id="herald+Dunbar" class="herald_noble" onclick="on_herald('Dunbar')">Dunbar</div>
-<div id="herald+Galloway" class="herald_noble" onclick="on_herald('Galloway')">Galloway</div>
-<div id="herald+Lennox" class="herald_noble" onclick="on_herald('Lennox')">Lennox</div>
-<div id="herald+Mar" class="herald_noble" onclick="on_herald('Mar')">Mar</div>
-<div id="herald+Mentieth" class="herald_noble" onclick="on_herald('Mentieth')">Mentieth</div>
-<div id="herald+Ross" class="herald_noble" onclick="on_herald('Ross')">Ross</div>
-<div id="herald+Steward" class="herald_noble" onclick="on_herald('Steward')">Steward</div>
-</div>
+<menu id="herald">
+<li class="title"> &#x2767; HERALD
+<li class="separator">
+<li data-noble="Angus" onclick="on_herald()"> Angus
+<li data-noble="Argyll" onclick="on_herald()"> Argyll
+<li data-noble="Atholl" onclick="on_herald()"> Atholl
+<li data-noble="Bruce" onclick="on_herald()"> Bruce
+<li data-noble="Buchan" onclick="on_herald()"> Buchan
+<li data-noble="Comyn" onclick="on_herald()"> Comyn
+<li data-noble="Dunbar" onclick="on_herald()"> Dunbar
+<li data-noble="Galloway" onclick="on_herald()"> Galloway
+<li data-noble="Lennox" onclick="on_herald()"> Lennox
+<li data-noble="Mar" onclick="on_herald()"> Mar
+<li data-noble="Mentieth" onclick="on_herald()"> Mentieth
+<li data-noble="Ross" onclick="on_herald()"> Ross
+<li data-noble="Steward" onclick="on_herald()"> Steward
+</menu>
 
 <header>
 	<div id="toolbar">
-	<div class="menu">
-		<div class="menu_title"><img src="/images/cog.svg"></div>
-		<div class="menu_popup">
-			<div class="menu_item" onclick="old_block_style()">Classic labels</div>
-			<div class="menu_item" onclick="new_block_style()">New labels</div>
-			<div class="menu_separator"></div>
-			<a class="menu_item" href="info/notes.html" target="_blank">Notes</a>
-			<a class="menu_item" href="info/rules.html" target="_blank">Rules</a>
-			<a class="menu_item" href="info/cards.html" target="_blank">Cards</a>
-			<a class="menu_item" href="info/blocks.html" target="_blank">Blocks</a>
-			<div class="resign menu_separator"></div>
-			<div class="resign menu_item" onclick="confirm_resign()">Resign</div>
-		</div>
+		<details>
+			<summary><img src="/images/cog.svg"></summary>
+			<menu>
+				<li onclick="old_block_style()">Classic labels
+				<li onclick="new_block_style()">New labels
+				<li class="menu_separator">
+				<li><a href="info/notes.html" target="_blank">Notes</a>
+				<li><a href="info/rules.html" target="_blank">Rules</a>
+				<li><a href="info/cards.html" target="_blank">Cards</a>
+				<li><a href="info/blocks.html" target="_blank">Blocks</a>
+				<li class="resign separator">
+				<li class="resign" onclick="confirm_resign()">Resign
+			</menu>
+		</details>
+		<button onclick="toggle_blocks()"><img src="/images/earth-africa-europe.svg"></button>
 	</div>
-	<div class="icon_button" onclick="toggle_blocks()"><img src="/images/earth-africa-europe.svg"></div>
-	<div class="icon_button" onclick="toggle_zoom()"><img src="/images/magnifying-glass.svg"></div>
-	<div class="icon_button" onclick="toggle_log()"><img src="/images/scroll-quill.svg"></div>
-	</div>
-	<div id="prompt"></div>
-	<div id="actions"></div>
 </header>
 
 <aside>
@@ -92,10 +81,19 @@
 	<div id="log"></div>
 </aside>
 
-<main>
+<main data-min-zoom="1" data-max-zoom="2">
 
 <div id="mapwrap">
 <div id="map">
+
+<div id="battle">
+<div id="battle_header"></div>
+<div id="ER"></div>
+<div id="EF"></div>
+<div id="FF"></div>
+<div id="FR"></div>
+<div id="battle_message"></div>
+</div>
 
 <svg id="svgmap" width="1688px" height="1950px" viewBox="0 0 1688 1950">
 <g id="areas" transform="translate(0,1950) scale(0.1,-0.1)">

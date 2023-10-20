@@ -76,6 +76,46 @@ let ui = {
 	present: new Set(),
 }
 
+function remember_position(e) {
+	if (e.classList.contains("show")) {
+		let rect = e.getBoundingClientRect()
+		e.my_parent = true
+		e.my_x = rect.x
+		e.my_y = rect.y
+	} else {
+		e.my_parent = false
+		e.my_x = 0
+		e.my_y = 0
+	}
+}
+
+function animate_position(e) {
+	if (e.parentElement) {
+		if (e.my_parent) {
+			let rect = e.getBoundingClientRect()
+			let dx = e.my_x - rect.x
+			let dy = e.my_y - rect.y
+			if (dx !== 0 || dy !== 0) {
+				e.animate(
+					[
+						{ transform: `translate(${dx}px, ${dy}px)`, },
+						{ transform: "translate(0, 0)", },
+					],
+					{ duration: 250, easing: "ease" }
+				)
+			}
+		} else {
+				e.animate(
+					[
+						{ opacity: 0 },
+						{ opacity: 1 }
+					],
+					{ duration: 250, easing: "ease" }
+				)
+		}
+	}
+}
+
 function on_focus_area_tip(x) {
 	ui.areas[x].classList.add("tip")
 }
@@ -247,8 +287,8 @@ function on_click_card(evt) {
 	send_action('play', c)
 }
 
-function on_herald(noble) {
-	send_action('noble', noble)
+function on_herald() {
+	send_action('noble', event.target.dataset.noble)
 }
 
 function build_battle_button(menu, b, c, click, enter, img_src) {
@@ -701,32 +741,45 @@ function on_update() {
 	document.getElementById("scotland_vp").textContent = view.s_vp
 	document.getElementById("turn_info").textContent = `Turn ${view.turn} of Year ${view.year}`
 
+	for (let c = 1; c <= 25; ++c) {
+		remember_position(ui.cards[c])
+
 	update_cards()
 	update_map()
 
 	if (view.actions && view.actions.noble) {
-		document.getElementById("herald").classList.add("show")
-		for (let noble of NOBLES) {
-			let element = document.getElementById("herald+" + noble)
-			if (view.actions.noble.includes(noble))
-				element.classList.add("show")
-			else
-				element.classList.remove("show")
+		document.getElementById("herald").style.display = "block"
+		for (let e of document.getElementById("herald").querySelectorAll("li[data-noble]")) {
+			let noble = e.dataset.noble
+			if (view.actions.noble.includes(noble)) {
+				e.classList.add("action")
+				e.classList.remove("disabled")
+			} else {
+				e.classList.remove("action")
+				e.classList.add("disabled")
+			}
 		}
 	} else {
-		document.getElementById("herald").classList.remove("show")
+		document.getElementById("herald").style.display = null
 	}
 
 	if (view.battle) {
 		document.getElementById("battle_header").textContent = view.battle.title
 		document.getElementById("battle_message").textContent = view.battle.flash
-		document.getElementById("battle").classList.add("show")
+		if (!document.getElementById("battle").classList.contains("show")) {
+			document.getElementById("battle").classList.add("show")
+			document.getElementById("battle").scrollIntoView({
+				block:"center", inline:"center", behavior:"smooth"
+			})
+		}
 		update_battle()
 	} else {
 		document.getElementById("battle").classList.remove("show")
 	}
+
+	for (let c = 1; c <= 25; ++c) {
+		animate_position(ui.cards[c])
 }
 
 drag_element_with_mouse("#battle", "#battle_header")
-drag_element_with_mouse("#herald", "#herald_header")
 scroll_with_middle_mouse("main", 2)
