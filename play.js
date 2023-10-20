@@ -1,5 +1,11 @@
 "use strict"
 
+function scroll_into_view_if_mobile(e) {
+	// if ("ontouchstart" in window)
+	if (window.innerWidth <= 800)
+		e.scrollIntoView({ block: "center", inline: "center", behavior: "smooth" })
+}
+
 function set_has(set, item) {
 	let a = 0
 	let b = set.length - 1
@@ -768,9 +774,7 @@ function on_update() {
 		document.getElementById("battle_message").textContent = view.battle.flash
 		if (!document.getElementById("battle").classList.contains("show")) {
 			document.getElementById("battle").classList.add("show")
-			document.getElementById("battle").scrollIntoView({
-				block:"center", inline:"center", behavior:"smooth"
-			})
+			scroll_into_view_if_mobile(document.getElementById("battle"))
 		}
 		update_battle()
 	} else {
