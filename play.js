@@ -1,11 +1,5 @@
 "use strict"
 
-function scroll_into_view_if_mobile(e) {
-	// if ("ontouchstart" in window)
-	if (window.innerWidth <= 800)
-		e.scrollIntoView({ block: "center", inline: "center", behavior: "smooth" })
-}
-
 function set_has(set, item) {
 	let a = 0
 	let b = set.length - 1
@@ -131,7 +125,7 @@ function on_blur_area_tip(x) {
 }
 
 function on_click_area_tip(x) {
-	ui.areas[x].scrollIntoView({ block:"center", inline:"center", behavior:"smooth" })
+	scroll_into_view(ui.areas[x])
 }
 
 function sub_area_name(match, p1, offset, string) {
@@ -525,6 +519,16 @@ function hide_block(element) {
 		ui.offmap_element.appendChild(element)
 }
 
+function is_in_battle(b) {
+	if (view.battle) {
+		if (view.battle.ER.includes(b)) return true
+		if (view.battle.SR.includes(b)) return true
+		if (view.battle.EF.includes(b)) return true
+		if (view.battle.SF.includes(b)) return true
+	}
+	return false
+}
+
 function update_map() {
 	let overflow = { England: [], Scotland: [] }
 	let layout = {}
@@ -544,12 +548,15 @@ function update_map() {
 		}
 	}
 
+	let is_battle_open = document.getElementById("battle").getAttribute("open") !== null
+
 	for (let b = 0; b < BLOCKS.length; ++b) {
 		let info = BLOCKS[b]
 		let element = ui.blocks[b]
 		let area = view.location[b]
 		if (area > 0 || BLOCKS[b].mortal) {
 			let moved = (set_has(view.moved, b) && view.who !== b) ? " moved" : ""
+			let battle = (is_battle_open && is_in_battle(b)) ? " battle" : ""
 			if (is_known_block(b) || area === 0) {
 				let image = " block_" + info.image
 				let steps = " r" + (info.steps - view.steps[b])
@@ -558,9 +565,9 @@ function update_map() {
 					moved = " moved"
 					steps = " r0"
 				}
-				element.classList = info.owner + known + " block" + image + steps + moved
+				element.classList = info.owner + known + " block" + image + steps + moved + battle
 			} else {
-				element.classList = info.owner + " block" + moved
+				element.classList = info.owner + " block" + moved + battle
 			}
 			if (area > 0) {
 				if (info.owner === "Scotland")
@@ -583,6 +590,7 @@ function update_map() {
 		if (ui.areas[area]) {
 			ui.areas[area].classList.remove('highlight')
 			ui.areas[area].classList.remove('where')
+			ui.areas[area].classList.remove('battle')
 		}
 	}
 	if (view.actions && view.actions.area)
@@ -601,6 +609,8 @@ function update_map() {
 				ui.blocks[b].classList.add('highlight')
 		if (view.who >= 0)
 			ui.blocks[view.who].classList.add('selected')
+	} else {
+		ui.areas[view.where].classList.add('battle')
 	}
 }
 
@@ -653,6 +663,38 @@ function insert_battle_block(root, node, block) {
 		}
 	}
 	root.appendChild(node)
+}
+
+function show_battle() {
+	let box = document.getElementById("battle")
+	let space = AREAS[view.where]
+	let sh = ui.areas[view.where].getBoundingClientRect().height >> 1
+
+	// reset position
+	box.classList.add("show")
+	box.style.top = null
+	box.style.left = null
+	box.setAttribute("open", true)
+
+	// calculate size
+	let w = box.clientWidth
+	let h = box.clientHeight
+
+	// center where possible
+	let x = space.x - w / 2
+	if (x < 130)
+		x = 130
+	if (x > 1460 - w)
+		x = 1460 - w
+
+	let y = space.y - sh - h - 40
+	if (y < 200)
+		y = space.y + sh + 40
+
+	box.style.top = y + "px"
+	box.style.left = x + "px"
+
+	scroll_into_view_if_needed(box)
 }
 
 function update_battle() {
@@ -747,11 +789,10 @@ function on_update() {
 	document.getElementById("scotland_vp").textContent = view.s_vp
 	document.getElementById("turn_info").textContent = `Turn ${view.turn} of Year ${view.year}`
 
-	for (let c = 1; c <= 25; ++c) {
+	for (let c = 1; c <= 25; ++c)
 		remember_position(ui.cards[c])
 
 	update_cards()
-	update_map()
 
 	if (view.actions && view.actions.noble) {
 		document.getElementById("herald").style.display = "block"
@@ -772,18 +813,17 @@ function on_update() {
 	if (view.battle) {
 		document.getElementById("battle_header").textContent = view.battle.title
 		document.getElementById("battle_message").textContent = view.battle.flash
-		if (!document.getElementById("battle").classList.contains("show")) {
-			document.getElementById("battle").classList.add("show")
-			scroll_into_view_if_mobile(document.getElementById("battle"))
-		}
 		update_battle()
+		if (!document.getElementById("battle").classList.contains("show"))
+			show_battle()
 	} else {
 		document.getElementById("battle").classList.remove("show")
 	}
 
-	for (let c = 1; c <= 25; ++c) {
+	update_map()
+
+	for (let c = 1; c <= 25; ++c)
 		animate_position(ui.cards[c])
 }
 
-drag_element_with_mouse("#battle", "#battle_header")
-scroll_with_middle_mouse("main", 2)
+document.getElementById("battle").addEventListener("toggle", on_update)
