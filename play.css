@@ -50,9 +50,8 @@ header.your_turn { background-color: orange; }
 	background-repeat: no-repeat;
 	width: 224px;
 	height: 344px;
-	border-radius: 12px;
 	background-color: #883737;
-	box-shadow: 1px 1px 5px rgba(0,0,0,0.5);
+	box-shadow: 1px 1px 4px #0006;
 	transition: 100ms;
 	display: none;
 }
@@ -83,7 +82,6 @@ header.your_turn { background-color: orange; }
 .role_info .card {
 	width: 168px;
 	height: 258px;
-	border-radius: 9px;
 	margin: 0 auto;
 }
 
@@ -103,7 +101,7 @@ header.your_turn { background-color: orange; }
 /* MAP */
 
 #mapwrap {
-	box-shadow: 0px 1px 10px rgba(0,0,0,0.5);
+	box-shadow: 0px 1px 8px #0008;
 	width: 1688px;
 	height: 1950px;
 }
@@ -157,8 +155,7 @@ div.turn {
 	background-size: cover;
 	background-repeat: no-repeat;
 	background-image: url(turn_marker.jpg);
-	box-shadow: 1px 1px 3px rgba(0,0,0,0.5);
-	border-radius: 4px;
+	box-shadow: 0 0 2px 1px #0002;
 	transition: 700ms ease;
 }
 
@@ -189,51 +186,48 @@ body.shift .block.known:hover {
 	z-index: 100;
 }
 
-.oldblocks div.block { border-radius: 8px; }
-.newblocks div.block { border-radius: 4px; }
-
-#blocks > div.block {
+#blocks > .block {
 	position: absolute;
 }
 
-#battle > div.block {
+#battle > .block {
 	position: relative;
 }
 
-div.block {
+.block {
 	background-size: 700% 400%;
 	background-repeat: no-repeat;
 	width: 60px;
 	height: 60px;
-	box-shadow: 0px 0px 3px black;
+	box-shadow: 0 0 2px 1px #0002;
 }
 
-.oldblocks div.block.England { border: 3px solid brown; background-color: brown; }
-.oldblocks div.block.Scotland { border: 3px solid #06a; background-color: #06a; }
-.oldblocks div.block.highlight { border-color: white; }
-.oldblocks div.block.selected { border-color: yellow; }
-.oldblocks div.block.highlight { box-shadow: 0px 0px 4px 1px white; }
-.oldblocks div.block.selected { box-shadow: 0 0 4px 1px yellow; }
 
-.newblocks div.block.England { border: 2px solid #a12; background-color: #a12; }
-.newblocks div.block.Scotland { border: 2px solid #059; background-color: #059; }
-.newblocks div.block.highlight { box-shadow: 0px 0px 2px 3px white; }
-.newblocks div.block.selected { box-shadow: 0px 0px 2px 3px yellow; }
+.oldblocks .block.England { border: 4px solid brown; background-color: brown; }
+.oldblocks .block.Scotland { border: 4px solid #06a; background-color: #06a; }
 
-.oldblocks .battle_menu.hit div.block.highlight { border: 3px solid black; box-shadow: 0px 0px 3px black; }
-.newblocks .battle_menu.hit div.block.highlight { box-shadow: 0px 0px 2px 3px black; }
+.newblocks .block.England { border: 2px solid #a12; background-color: #a12; }
+.newblocks .block.Scotland { border: 2px solid #059; background-color: #059; }
 
-div.block.highlight { cursor: pointer; }
-div.block.moved { filter: grayscale(50%) brightness(80%); }
-div.block.highlight.moved { filter: grayscale(60%) brightness(95%); }
+.oldblocks .block.highlight { border-color: white; }
+.oldblocks .block.selected { border-color: yellow; }
+.oldblocks .battle_menu.hit .block.highlight { border-color: black; }
 
-div.block.r1 { transform: rotate(-90deg); }
-div.block.r2 { transform: rotate(-180deg); }
-div.block.r3 { transform: rotate(-270deg); }
+.newblocks .block.highlight { border-color: white; box-shadow: 0 0 0 1px white; }
+.newblocks .block.selected { border-color: yellow; box-shadow: 0 0 0 1px yellow; }
+.newblocks .battle_menu.hit .block.highlight { border-color: black; box-shadow: 0 0 0 1px black; }
 
-div.block:hover { z-index: 1; }
+.block.highlight { cursor: pointer; }
+.block.moved { filter: grayscale(50%) brightness(80%); }
+.block.highlight.moved { filter: grayscale(60%) brightness(95%); }
 
-div.block {
+.block.r1 { transform: rotate(-90deg); }
+.block.r2 { transform: rotate(-180deg); }
+.block.r3 { transform: rotate(-270deg); }
+
+.block:hover { z-index: 1; }
+
+.block {
 	transition-property: top, left, transform, opacity;
 	transition-duration: 700ms, 700ms, 250ms, 250ms;
 	transition-timing-function: ease, ease, ease, linear;
@@ -247,9 +241,9 @@ div.block {
 }
 
 /*
-div.block.battle { filter: grayscale(60%) brightness(60%) !important }
+.block.battle { filter: grayscale(60%) brightness(60%) !important }
 */
-div.block.battle { opacity: 0; pointer-events: none }
+.block.battle { opacity: 0; pointer-events: none }
 
 /* HERALD DIALOG */
 

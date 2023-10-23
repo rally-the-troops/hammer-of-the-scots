@@ -454,7 +454,7 @@ function layout_blocks(location, north, south) {
 function position_block(location, row, n_rows, col, n_cols, element) {
 	let area = AREAS[location]
 	let block_size = 60+6
-	let padding = 4
+	let padding = 6
 	let offset = block_size + padding
 	let row_size = (n_rows-1) * offset
 	let col_size = (n_cols-1) * offset
