@@ -186,6 +186,25 @@ body.shift .block.known:hover {
 	z-index: 100;
 }
 
+.border {
+	position: absolute;
+	width: 24px;
+	height: 24px;
+	border-radius: 50%;
+	text-align: center;
+	line-height: 24px;
+	font-size: 16px;
+	font-weight: bold;
+	color: white;
+	background-color: #654;
+}
+
+.oldblocks .border.England { background-color: brown; }
+.oldblocks .border.Scotland { background-color: #06a; }
+
+.newblocks .border.England { background-color: #a12; }
+.newblocks .border.Scotland { background-color: #059; }
+
 #blocks > .block {
 	position: absolute;
 }
@@ -201,7 +220,6 @@ body.shift .block.known:hover {
 	height: 60px;
 	box-shadow: 0 0 2px 1px #0002;
 }
-
 
 .oldblocks .block.England { border: 4px solid brown; background-color: brown; }
 .oldblocks .block.Scotland { border: 4px solid #06a; background-color: #06a; }

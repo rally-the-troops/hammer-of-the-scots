@@ -19,6 +19,9 @@ const first_map_area = 3
 
 const ENEMY = { Scotland: "England", England: "Scotland" }
 
+const PID = { "": 0, Scotland: 1, England: 2 }
+const UNPID = [ "", "Scotland", "England" ]
+
 const OBSERVER = "Observer"
 const BOTH = "Both"
 const ENGLAND = "England"
@@ -389,7 +392,7 @@ function border_id(a, b) {
 }
 
 function border_was_last_used_by_enemy(from, to) {
-	return game.last_used[border_id(from, to)] === ENEMY[game.active]
+	return map_get(game.last_used, border_id(from, to), 0) === PID[ENEMY[game.active]]
 }
 
 function border_type(a, b) {
@@ -397,11 +400,15 @@ function border_type(a, b) {
 }
 
 function border_limit(a, b) {
-	return game.border_limit[border_id(a,b)] || 0
+	return map_get(game.border_limit, border_id(a,b), 0)
+}
+
+function set_border_limit(a, b, n) {
+	map_set(game.border_limit, border_id(a,b), n)
 }
 
 function reset_border_limits() {
-	game.border_limit = {}
+	game.border_limit.length = 0
 }
 
 function count_friendly(where) {
@@ -576,13 +583,13 @@ function is_battle_reserve(b) {
 }
 
 function is_attacker(b) {
-	if (game.location[b] === game.where && block_owner(b) === game.attacker[game.where])
+	if (game.location[b] === game.where && block_owner(b) === get_attacker(game.where))
 		return !set_has(game.reserves, b)
 	return false
 }
 
 function is_defender(b) {
-	if (game.location[b] === game.where && block_owner(b) !== game.attacker[game.where])
+	if (game.location[b] === game.where && block_owner(b) !== get_attacker(game.where))
 		return !set_has(game.reserves, b)
 	return false
 }
@@ -870,8 +877,8 @@ function start_game_turn() {
 	// Reset movement and attack tracking state
 	game.truce = false
 	reset_border_limits()
-	game.last_used = {}
-	game.attacker = {}
+	game.last_used = []
+	game.attacker = []
 	game.reserves = []
 	game.moved = []
 
@@ -1108,7 +1115,7 @@ function defect_nobles(list) {
 			log(name + " defected.")
 			who = swap_blocks(who)
 			if (is_contested_area(where))
-				game.attacker[where] = block_owner(who)
+				set_attacker(where, block_owner(who))
 		}
 	}
 	resume_coronation()
@@ -1182,7 +1189,7 @@ states.herald = {
 			let where = game.location[who]
 			who = swap_blocks(who)
 			if (is_contested_area(where)) {
-				game.attacker[where] = game.active
+				set_attacker(where, game.active)
 				start_battle(where, 'herald')
 				return
 			}
@@ -1373,7 +1380,7 @@ function end_pillage(where) {
 	game.where = NOWHERE
 	delete game.pillage
 	if (is_contested_area(where)) {
-		game.attacker[where] = ENEMY[game.active]
+		set_attacker(where, ENEMY[game.active])
 		start_battle(where, 'pillage')
 	} else {
 		end_player_turn()
@@ -1455,12 +1462,36 @@ states.sea_move_to = {
 
 // MOVE PHASE
 
+function get_attacker(x) {
+	return UNPID[map_get(game.attacker, x, 0)]
+}
+
+function set_attacker(x, who) {
+	return map_set(game.attacker, x, PID[who])
+}
+
+function main_border(to) {
+	return map_get(game.main_border, to, 0)
+}
+
+function main_origin(to) {
+	return map_get(game.main_origin, to, 0)
+}
+
+function set_main_border(to, x) {
+	map_set(game.main_border, to, x)
+}
+
+function set_main_origin(to, x) {
+	map_set(game.main_origin, to, x)
+}
+
 function goto_move_phase(moves) {
 	game.state = 'move_who'
 	game.moves = moves
 	game.activated = []
-	game.main_origin = {}
-	game.main_border = {}
+	game.main_origin = []
+	game.main_border = []
 	game.turn_log = []
 	clear_undo()
 }
@@ -1507,17 +1538,17 @@ states.move_who = {
 
 function move_block(who, from, to) {
 	game.location[who] = to
-	game.border_limit[border_id(from, to)] = border_limit(from, to) + 1
+	set_border_limit(from, to, border_limit(from, to) + 1)
 	game.distance ++
 	if (is_contested_area(to)) {
-		game.last_used[border_id(from, to)] = game.active
-		if (!game.attacker[to]) {
-			game.attacker[to] = game.active
-			game.main_border[to] = from
-			game.main_origin[to] = game.origin
+		map_set(game.last_used, border_id(from, to), PID[game.active])
+		if (!get_attacker(to)) {
+			set_attacker(to, game.active)
+			set_main_border(to, from)
+			set_main_origin(to, game.origin)
 			return ATTACK_MARK
 		} else {
-			if (game.attacker[to] !== game.active || game.main_border[to] !== from || game.main_origin[to] !== game.origin) {
+			if (get_attacker(to) !== game.active || main_border(to) !== from || main_origin(to) !== game.origin) {
 				set_add(game.reserves, who)
 				return RESERVE_MARK
 			} else {
@@ -1567,9 +1598,9 @@ states.move_where = {
 			game.location[game.who] = to
 			set_add(game.moved, game.who)
 			if (is_contested_area(to)) {
-				if (!game.attacker[to]) {
+				if (!get_attacker(to)) {
 					game.turn_log.push([area_tag(from), area_tag(to) + ATTACK_MARK + " (Norse)"])
-					game.attacker[to] = game.active
+					set_attacker(to, game.active)
 				} else {
 					game.turn_log.push([area_tag(from), area_tag(to) + RESERVE_MARK + " (Norse)"])
 					set_add(game.reserves, game.who)
@@ -1627,6 +1658,7 @@ function bring_on_reserves() {
 }
 
 function goto_battle_phase() {
+	reset_border_limits()
 	if (have_contested_areas()) {
 		game.active = game.p1
 		game.state = 'battle_phase'
@@ -1679,7 +1711,7 @@ function end_battle() {
 	reset_border_limits()
 	game.moved = []
 
-	game.active = game.attacker[game.where]
+	game.active = get_attacker(game.where)
 	let victor = game.active
 	if (is_contested_area(game.where))
 		victor = ENEMY[game.active]
@@ -1719,7 +1751,7 @@ function goto_battle_round(new_battle_round) {
 		if (count_defenders() === 0) {
 			log("Defending main force was eliminated.")
 			log("Battlefield control changed.")
-			game.attacker[game.where] = ENEMY[game.attacker[game.where]]
+			set_attacker(game.where, ENEMY[get_attacker(game.where)])
 		} else if (count_attackers() === 0) {
 			log("Attacking main force was eliminated.")
 		}
@@ -1780,7 +1812,7 @@ function battle_step(active, initiative, candidate) {
 }
 
 function pump_battle_step() {
-	let attacker = game.attacker[game.where]
+	let attacker = get_attacker(game.where)
 	let defender = ENEMY[attacker]
 
 	if (battle_step(defender, 'A', is_defender)) return
@@ -1849,7 +1881,7 @@ function pass_with_block(b) {
 }
 
 function count_enemy_hp_in_battle() {
-	let is_candidate = (game.active === game.attacker[game.where]) ? is_defender : is_attacker
+	let is_candidate = (game.active === get_attacker(game.where)) ? is_defender : is_attacker
 	let n = 0
 	for (let b = 0; b < block_count; ++b)
 		if (is_candidate(b))
@@ -1962,7 +1994,7 @@ function apply_hit(who) {
 }
 
 function list_victims(p) {
-	let is_candidate = (p === game.attacker[game.where]) ? is_attacker : is_defender
+	let is_candidate = (p === get_attacker(game.where)) ? is_attacker : is_defender
 	let max = 0
 	for (let b = 0; b < block_count; ++b)
 		if (is_candidate(b) && game.steps[b] > max)
@@ -1994,7 +2026,7 @@ states.battle_hits = {
 }
 
 function goto_retreat() {
-	game.active = game.attacker[game.where]
+	game.active = get_attacker(game.where)
 	if (is_contested_area(game.where)) {
 		game.state = 'retreat'
 		game.turn_log = []
@@ -2131,7 +2163,7 @@ states.retreat_in_battle = {
 }
 
 function goto_regroup() {
-	game.active = game.attacker[game.where]
+	game.active = get_attacker(game.where)
 	if (is_enemy_area(game.where))
 		game.active = ENEMY[game.active]
 	game.state = 'regroup'
@@ -2157,22 +2189,22 @@ states.regroup = {
 	},
 	end_regroup: function () {
 		print_turn_log("regrouped")
-		game.attacker[game.where] = null // XXX ???
+		set_attacker(game.where, "") // XXX ???
 		game.where = NOWHERE
 		clear_undo()
 		game.active = game.battle_active
 		delete game.battle_active
 		if (game.battle_reason === 'herald') {
 			delete game.battle_reason
-			game.last_used = {}
+			game.last_used = []
 			end_player_turn()
 		} else if (game.battle_reason === 'pillage') {
 			delete game.battle_reason
-			game.last_used = {}
+			game.last_used = []
 			end_player_turn()
 		} else if (game.battle_reason === 'coronation') {
 			delete game.battle_reason
-			game.last_used = {}
+			game.last_used = []
 			resume_coronation()
 		} else {
 			delete game.battle_reason
@@ -3044,7 +3076,7 @@ function make_battle_view() {
 		flash: game.flash
 	}
 
-	battle.title = game.attacker[game.where] + " attacks " + area_name(game.where)
+	battle.title = get_attacker(game.where) + " attacks " + area_name(game.where)
 	battle.title += " \u2014 round " + game.battle_round + " of 3"
 
 	function fill_cell(cell, owner, fn) {
@@ -3074,11 +3106,12 @@ exports.setup = function (seed, scenario, options) {
 		moved: [],
 		reserves: [],
 
-		attacker: {},
-		border_limit: {},
-		last_used: {},
-		main_border: {},
-		main_origin: {},
+		attacker: [],
+		border_limit: [],
+		last_used: [],
+		main_border: [],
+		main_origin: [],
+
 		show_cards: 0,
 		who: NOBODY,
 		where: NOWHERE,
@@ -3167,7 +3200,15 @@ exports.view = function(state, current) {
 		location: game.location,
 		steps: game.steps,
 		moved: game.moved,
+		last_used: game.last_used,
+		border_limit: game.border_limit,
 		active: game.active,
+	}
+
+	if (game.main_border && game.main_border.length > 0) {
+		view.main_border = []
+		for (let i = 0; i < game.main_border.length; i += 2)
+			set_add(view.main_border, border_id(game.main_border[i+0], game.main_border[i+1]))
 	}
 
 	states[game.state].prompt(view, current)
@@ -3195,6 +3236,15 @@ function array_insert(array, index, item) {
 		array[i] = array[i - 1]
 	array[index] = item
 	return array
+}
+
+function array_insert_pair(array, index, key, value) {
+	for (let i = array.length; i > index; i -= 2) {
+		array[i] = array[i-2]
+		array[i+1] = array[i-1]
+	}
+	array[index] = key
+	array[index+1] = value
 }
 
 function set_clear(set) {
@@ -3263,6 +3313,40 @@ function set_toggle(set, item) {
 			return array_remove(set, m)
 	}
 	return array_insert(set, a, item)
+}
+
+function map_get(map, key, missing) {
+	let a = 0
+	let b = (map.length >> 1) - 1
+	while (a <= b) {
+		let m = (a + b) >> 1
+		let x = map[m<<1]
+		if (key < x)
+			b = m - 1
+		else if (key > x)
+			a = m + 1
+		else
+			return map[(m<<1)+1]
+	}
+	return missing
+}
+
+function map_set(map, key, value) {
+	let a = 0
+	let b = (map.length >> 1) - 1
+	while (a <= b) {
+		let m = (a + b) >> 1
+		let x = map[m<<1]
+		if (key < x)
+			b = m - 1
+		else if (key > x)
+			a = m + 1
+		else {
+			map[(m<<1)+1] = value
+			return
+		}
+	}
+	array_insert_pair(map, a<<1, key, value)
 }
 
 // Fast deep copy for objects without cycles

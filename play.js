@@ -16,6 +16,22 @@ function set_has(set, item) {
 	return false
 }
 
+function map_get(map, key, missing) {
+	let a = 0
+	let b = (map.length >> 1) - 1
+	while (a <= b) {
+		let m = (a + b) >> 1
+		let x = map[m<<1]
+		if (key < x)
+			b = m - 1
+		else if (key > x)
+			a = m + 1
+		else
+			return map[(m<<1)+1]
+	}
+	return missing
+}
+
 const ENEMY = { Scotland: "England", England: "Scotland" }
 
 const ENGLAND_BAG = area_index["E. Bag"]
@@ -70,6 +86,7 @@ let ui = {
 	cards: {},
 	card_backs: {},
 	areas: [],
+	borders: [],
 	blocks: [],
 	battle_menu: [],
 	battle_block: [],
@@ -383,6 +400,21 @@ function build_map() {
 		build_battle_block(b, block)
 		build_map_block(b, block)
 	}
+
+	for (let name in BORDERS_XY) {
+		let xy = BORDERS_XY[name]
+		let [a, b] = name.split(" / ")
+		a = area_index[a]
+		b = area_index[b]
+		let id = a * 100 + b
+		let e = document.createElement("div")
+		e.my_id = id
+		e.className = "hide"
+		e.style.left = (xy.x - 12) + "px"
+		e.style.top = (xy.y - 12) + "px"
+		ui.borders.push(e)
+		document.getElementById("borders").appendChild(e)
+	}
 }
 
 build_map()
@@ -611,6 +643,32 @@ function update_map() {
 			ui.blocks[view.who].classList.add('selected')
 	} else {
 		ui.areas[view.where].classList.add('battle')
+	}
+
+	for (let e of ui.borders) {
+		let u = map_get(view.last_used, e.my_id, 0)
+		let n = map_get(view.border_limit, e.my_id, "")
+		if (view.main_border && set_has(view.main_border, e.my_id))
+			n += "*"
+		switch (u) {
+			case 1:
+				e.className = "border Scotland"
+				e.textContent = n
+				break
+			case 2:
+				e.className = "border England"
+				e.textContent = n
+				break
+			case 0:
+				if (n) {
+					e.className = "border"
+					e.textContent = n
+				} else {
+					e.className = "hide"
+					e.textContent = ""
+				}
+				break
+		}
 	}
 }
 
