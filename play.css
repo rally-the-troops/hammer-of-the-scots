@@ -2,10 +2,9 @@ main { background-color: slategray; }
 aside { background-color: silver; }
 header { background-color: silver; }
 header.your_turn { background-color: orange; }
-#role_England .role_name { background-color: salmon; }
-#role_Scotland .role_name { background-color: skyblue; }
+#role_England { background-color: salmon; }
+#role_Scotland { background-color: skyblue; }
 #turn_info { background-color: gainsboro; }
-.role_vp { float: right; }
 
 #log { background-color: whitesmoke; }
 #log div { padding-left: 20px; text-indent: -12px; }
