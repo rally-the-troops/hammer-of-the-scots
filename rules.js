@@ -3160,19 +3160,6 @@ exports.action = function (state, current, action, arg) {
 	return game
 }
 
-exports.resign = function (state, current) {
-	game = state
-	if (game.state !== 'game_over') {
-		log("")
-		log(current + " resigned.")
-		game.active = "None"
-		game.state = 'game_over'
-		game.victory = current + " resigned."
-		game.result = ENEMY[current]
-	}
-	return game
-}
-
 function observer_hand() {
 	let hand = []
 	hand.length = Math.max(game.e_hand.length, game.s_hand.length)
