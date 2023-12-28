@@ -1,5 +1,7 @@
 "use strict"
 
+let is_touch_device = 0 // ("ontouchstart" in window)
+
 function set_has(set, item) {
 	let a = 0
 	let b = set.length - 1
@@ -246,14 +248,17 @@ function is_battle_reserve(who, list) {
 function on_focus_battle_block(evt) {
 	let b = evt.target.block
 	let msg = block_name(b)
+
 	if (is_battle_reserve(b, view.battle.ER))
 		msg = "English Reserve"
 	if (is_battle_reserve(b, view.battle.SR))
 		msg = "Scottish Reserve"
-	if (view.actions && view.actions.battle_fire && view.actions.battle_fire.includes(b))
-		msg = "Fire with " + msg
-	if (view.actions && view.actions.battle_hit && view.actions.battle_hit.includes(b))
-		msg = "Take hit on " + msg
+	if (!is_touch_device) {
+		if (view.actions && view.actions.battle_fire && view.actions.battle_fire.includes(b))
+			msg = "Fire with " + msg
+		if (view.actions && view.actions.battle_hit && view.actions.battle_hit.includes(b))
+			msg = "Take hit on " + msg
+	}
 	document.getElementById("status").textContent = msg
 }
 
@@ -263,7 +268,7 @@ function on_blur_battle_block(evt) {
 
 function on_click_battle_block(evt) {
 	let b = evt.target.block
-	if ("ontouchstart" in window)
+	if (is_touch_device)
 		show_battle_popup(evt, evt.target.block)
 	else
 		send_action('block', evt.target.block)
@@ -271,21 +276,25 @@ function on_click_battle_block(evt) {
 
 function on_focus_battle_fire(evt) {
 	document.getElementById("status").textContent =
+		is_touch_device ? block_name(evt.target.block) :
 		"Fire with " + block_name(evt.target.block)
 }
 
 function on_focus_battle_retreat(evt) {
 	document.getElementById("status").textContent =
+		is_touch_device ? block_name(evt.target.block) :
 		"Retreat with " + block_name(evt.target.block)
 }
 
 function on_focus_battle_pass(evt) {
 	document.getElementById("status").textContent =
+		is_touch_device ? block_name(evt.target.block) :
 		"Pass with " + block_name(evt.target.block)
 }
 
 function on_focus_battle_hit(evt) {
 	document.getElementById("status").textContent =
+		is_touch_device ? block_name(evt.target.block) :
 		"Take hit on " + block_name(evt.target.block)
 }
 
@@ -294,28 +303,28 @@ function on_blur_battle_button(evt) {
 }
 
 function on_click_battle_hit(evt) {
-	if ("ontouchstart" in window)
+	if (is_touch_device)
 		show_battle_popup(evt, evt.target.block)
 	else
 		send_action('battle_hit', evt.target.block)
 }
 
 function on_click_battle_fire(evt) {
-	if ("ontouchstart" in window)
+	if (is_touch_device)
 		show_battle_popup(evt, evt.target.block)
 	else
 		send_action('battle_fire', evt.target.block)
 }
 
 function on_click_battle_retreat(evt) {
-	if ("ontouchstart" in window)
+	if (is_touch_device)
 		show_battle_popup(evt, evt.target.block)
 	else
 		send_action('battle_retreat', evt.target.block)
 }
 
 function on_click_battle_pass(evt) {
-	if ("ontouchstart" in window)
+	if (is_touch_device)
 		show_battle_popup(evt, evt.target.block)
 	else {
 		if (window.confirm("Are you sure that you want to PASS with " + block_name(evt.target.block) + "?"))

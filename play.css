@@ -353,3 +353,23 @@ body.Scotland #herald li.action:hover { background-color: hsl(0, 59%, 35%); }
 .known.block_95{background-position:-240px -180px}
 .known.block_96{background-position:-300px -180px}
 .known.block_97{background-position:-360px -180px}
+
+
+@media (pointer: coarse) {
+	.battle_menu {
+		width: 120px;
+		gap: 8px;
+	}
+
+	.battle_menu .action {
+		width: 30px;
+		height: 30px;
+		border-radius: 6px;
+		padding: 4px;
+	}
+
+	.battle_menu_list {
+		margin-top: 6px;
+		min-height: 39px;
+	}
+}
