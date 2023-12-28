@@ -263,7 +263,10 @@ function on_blur_battle_block(evt) {
 
 function on_click_battle_block(evt) {
 	let b = evt.target.block
-	send_action('block', b)
+	if ("ontouchstart" in window)
+		show_battle_popup(evt, evt.target.block)
+	else
+		send_action('block', evt.target.block)
 }
 
 function on_focus_battle_fire(evt) {
@@ -290,13 +293,34 @@ function on_blur_battle_button(evt) {
 	document.getElementById("status").textContent = ""
 }
 
-function on_click_battle_hit(evt) { send_action('battle_hit', evt.target.block) }
-function on_click_battle_fire(evt) { send_action('battle_fire', evt.target.block) }
-function on_click_battle_retreat(evt) { send_action('battle_retreat', evt.target.block) }
+function on_click_battle_hit(evt) {
+	if ("ontouchstart" in window)
+		show_battle_popup(evt, evt.target.block)
+	else
+		send_action('battle_hit', evt.target.block)
+}
+
+function on_click_battle_fire(evt) {
+	if ("ontouchstart" in window)
+		show_battle_popup(evt, evt.target.block)
+	else
+		send_action('battle_fire', evt.target.block)
+}
+
+function on_click_battle_retreat(evt) {
+	if ("ontouchstart" in window)
+		show_battle_popup(evt, evt.target.block)
+	else
+		send_action('battle_retreat', evt.target.block)
+}
 
 function on_click_battle_pass(evt) {
-	if (window.confirm("Are you sure that you want to PASS with " + block_name(evt.target.block) + "?"))
-		send_action('battle_pass', evt.target.block)
+	if ("ontouchstart" in window)
+		show_battle_popup(evt, evt.target.block)
+	else {
+		if (window.confirm("Are you sure that you want to PASS with " + block_name(evt.target.block) + "?"))
+			send_action('battle_pass', evt.target.block)
+	}
 }
 
 function on_click_card(evt) {
@@ -882,6 +906,59 @@ function on_update() {
 
 	for (let c = 1; c <= 25; ++c)
 		animate_position(ui.cards[c])
+}
+
+function is_action(action, card) {
+	return !!(view.actions && view.actions[action] && view.actions[action].includes(card))
+}
+
+function show_battle_popup(evt, target_id) {
+	let menu = document.getElementById("battle_popup")
+
+	let show = false
+	for (let item of menu.querySelectorAll("li")) {
+		let action = item.dataset.action
+		if (action) {
+			if (is_action(action, target_id)) {
+				show = true
+				item.classList.add("action")
+				item.classList.remove("disabled")
+				item.onclick = function () {
+					send_action(action, target_id)
+					hide_battle_popup()
+					evt.stopPropagation()
+				}
+			} else {
+				item.classList.remove("action")
+				item.classList.add("disabled")
+				item.onclick = null
+			}
+		}
+	}
+
+	if (show) {
+		menu.onmouseleave = hide_battle_popup
+		menu.style.display = "flex"
+
+		let block_rect = ui.battle_block[target_id].getBoundingClientRect()
+		let block_x = block_rect.x + block_rect.width/2
+		let block_y = block_rect.bottom + 4
+
+		let w = menu.clientWidth
+		let h = menu.clientHeight
+		let x = Math.max(5, Math.min(block_x - w / 2, window.innerWidth - w - 5))
+		let y = Math.max(5, Math.min(block_y, window.innerHeight - h - 40))
+		menu.style.left = x + "px"
+		menu.style.top = y + "px"
+
+		evt.stopPropagation()
+	} else {
+		menu.style.display = "none"
+	}
+}
+
+function hide_battle_popup() {
+	document.getElementById("battle_popup").style.display = "none"
 }
 
 document.getElementById("battle").addEventListener("toggle", on_update)

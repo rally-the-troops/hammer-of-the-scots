@@ -34,6 +34,13 @@
 <li data-noble="Steward" onclick="on_herald()"> Steward
 </menu>
 
+<menu id="battle_popup">
+	<li data-action="battle_fire"><img src="/images/pointy-sword.svg">
+	<li data-action="battle_retreat"><img src="/images/flying-flag.svg">
+	<li data-action="battle_pass"><img src="/images/sands-of-time.svg">
+	<li data-action="battle_hit"><img src="/images/cross-mark.svg">
+</menu>
+
 <header>
 	<div id="toolbar">
 		<details>
@@ -71,7 +78,7 @@
 	<div id="log"></div>
 </aside>
 
-<main data-min-zoom="1" data-max-zoom="2">
+<main data-min-zoom="1" data-max-zoom="2" onclick="hide_battle_popup()">
 
 <div id="mapwrap">
 <div id="map">

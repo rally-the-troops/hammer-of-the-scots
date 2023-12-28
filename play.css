@@ -33,6 +33,11 @@ header.your_turn { background-color: orange; }
 	}
 }
 
+#battle_popup img { display: block; width: 36px; height: 36px; padding: 4px; }
+#battle_popup li { padding: 0; }
+#battle_popup { padding: 4px; gap: 4px; }
+#battle_popup li.disabled { display: none }
+
 .card_back{background-image: url('cards/card_back.svg')}
 
 .card_truce{background-image:url('cards/card_truce.jpg')}
